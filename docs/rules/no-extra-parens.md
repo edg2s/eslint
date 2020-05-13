@@ -1,7 +1,5 @@
 # disallow unnecessary parentheses (no-extra-parens)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes problems reported by this rule.
-
 This rule restricts the use of parentheses to only where they are necessary.
 
 ## Rule Details
@@ -10,6 +8,7 @@ This rule always ignores extra parentheses around the following:
 
 * RegExp literals such as `(/abc/).test(var)` to avoid conflicts with the [wrap-regex](wrap-regex.md) rule
 * immediately-invoked function expressions (also known as IIFEs) such as `var x = (function () {})();` and `((function foo() {return 1;})())` to avoid conflicts with the [wrap-iife](wrap-iife.md) rule
+* arrow function arguments to avoid conflicts with the [arrow-parens](arrow-parens.md) rule
 
 ## Options
 
@@ -23,6 +22,10 @@ This rule has an object option for exceptions to the `"all"` option:
 * `"conditionalAssign": false` allows extra parentheses around assignments in conditional test expressions
 * `"returnAssign": false` allows extra parentheses around assignments in `return` statements
 * `"nestedBinaryExpressions": false` allows extra parentheses in nested binary expressions
+* `"ignoreJSX": "none|all|multi-line|single-line"` allows extra parentheses around no/all/multi-line/single-line JSX components. Defaults to `none`.
+* `"enforceForArrowConditionals": false` allows extra parentheses around ternary expressions which are the body of an arrow function
+* `"enforceForSequenceExpressions": false` allows extra parentheses around sequence expressions
+* `"enforceForNewInMemberExpressions": false` allows extra parentheses around `new` expressions in member expressions
 
 ### all
 
@@ -34,6 +37,12 @@ Examples of **incorrect** code for this rule with the default `"all"` option:
 a = (b * c);
 
 (a * b) + c;
+
+for (a in (b, c));
+
+for (a in (b));
+
+for (a of (b));
 
 typeof (a);
 
@@ -47,11 +56,21 @@ Examples of **correct** code for this rule with the default `"all"` option:
 
 (0).toString();
 
+(Object.prototype.toString.call());
+
 ({}.toString.call());
 
 (function(){}) ? a() : b();
 
 (/^a$/).test(x);
+
+for (a of (b, c));
+
+for (a of b);
+
+for (a in b, c);
+
+for (a in b);
 ```
 
 ### conditionalAssign
@@ -92,7 +111,7 @@ b => b ? (c = d) : (c = e);
 
 ### nestedBinaryExpressions
 
-Examples of **correct** for this rule with the `"all"` and `{ "nestedBinaryExpressions": false }` options:
+Examples of **correct** code for this rule with the `"all"` and `{ "nestedBinaryExpressions": false }` options:
 
 ```js
 /* eslint no-extra-parens: ["error", "all", { "nestedBinaryExpressions": false }] */
@@ -100,6 +119,107 @@ Examples of **correct** for this rule with the `"all"` and `{ "nestedBinaryExpre
 x = a || (b && c);
 x = a + (b * c);
 x = (a * b) / c;
+```
+
+### ignoreJSX
+
+Examples of **correct** code for this rule with the `all` and `{ "ignoreJSX": "all" }` options:
+
+```js
+/* eslint no-extra-parens: ["error", "all", { ignoreJSX: "all" }] */
+const Component = (<div />)
+const Component = (
+    <div
+        prop={true}
+    />
+)
+```
+
+Examples of **incorrect** code for this rule with the `all` and `{ "ignoreJSX": "multi-line" }` options:
+
+```js
+/* eslint no-extra-parens: ["error", "all", { ignoreJSX: "multi-line" }] */
+const Component = (<div />)
+const Component = (<div><p /></div>)
+```
+
+Examples of **correct** code for this rule with the `all` and `{ "ignoreJSX": "multi-line" }` options:
+
+```js
+/* eslint no-extra-parens: ["error", "all", { ignoreJSX: "multi-line" }] */
+const Component = (
+    <div>
+        <p />
+    </div>
+)
+const Component = (
+    <div
+        prop={true}
+    />
+)
+```
+
+Examples of **incorrect** code for this rule with the `all` and `{ "ignoreJSX": "single-line" }` options:
+
+```js
+/* eslint no-extra-parens: ["error", "all", { ignoreJSX: "single-line" }] */
+const Component = (
+    <div>
+        <p />
+    </div>
+)
+const Component = (
+    <div
+        prop={true}
+    />
+)
+```
+
+Examples of **correct** code for this rule with the `all` and `{ "ignoreJSX": "single-line" }` options:
+
+```js
+/* eslint no-extra-parens: ["error", "all", { ignoreJSX: "single-line" }] */
+const Component = (<div />)
+const Component = (<div><p /></div>)
+```
+
+### enforceForArrowConditionals
+
+Examples of **correct** code for this rule with the `"all"` and `{ "enforceForArrowConditionals": false }` options:
+
+```js
+/* eslint no-extra-parens: ["error", "all", { "enforceForArrowConditionals": false }] */
+
+const b = a => 1 ? 2 : 3;
+const d = c => (1 ? 2 : 3);
+```
+
+### enforceForSequenceExpressions
+
+Examples of **correct** code for this rule with the `"all"` and `{ "enforceForSequenceExpressions": false }` options:
+
+```js
+/* eslint no-extra-parens: ["error", "all", { "enforceForSequenceExpressions": false }] */
+
+(a, b);
+
+if ((val = foo(), val < 10)) {}
+
+while ((val = foo(), val < 10));
+```
+
+### enforceForNewInMemberExpressions
+
+Examples of **correct** code for this rule with the `"all"` and `{ "enforceForNewInMemberExpressions": false }` options:
+
+```js
+/* eslint no-extra-parens: ["error", "all", { "enforceForNewInMemberExpressions": false }] */
+
+const foo = (new Bar()).baz;
+
+const quux = (new Bar())[baz];
+
+(new Bar()).doSomething();
 ```
 
 ### functions
@@ -121,6 +241,8 @@ Examples of **correct** code for this rule with the `"functions"` option:
 
 (0).toString();
 
+(Object.prototype.toString.call());
+
 ({}.toString.call());
 
 (function(){} ? a() : b());
@@ -140,5 +262,6 @@ typeof (a);
 
 ## Related Rules
 
+* [arrow-parens](arrow-parens.md)
 * [no-cond-assign](no-cond-assign.md)
 * [no-return-assign](no-return-assign.md)

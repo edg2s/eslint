@@ -9,7 +9,7 @@
 // Requirements
 //------------------------------------------------------------------------------
 const rule = require("../../../lib/rules/consistent-return"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 //------------------------------------------------------------------------------
 // Tests
@@ -38,7 +38,11 @@ ruleTester.run("consistent-return", rule, {
         { code: "function foo() { if (true) return void 0; else return; }", options: [{ treatUndefinedAsUnspecified: true }] },
         { code: "function foo() { if (true) return void 0; else return undefined; }", options: [{ treatUndefinedAsUnspecified: true }] },
         { code: "var x = () => {  return {}; };", parserOptions: { ecmaVersion: 6 } },
-        { code: "if (true) { return 1; } return 0;", parserOptions: { ecmaVersion: 6, ecmaFeatures: { globalReturn: true } } }
+        { code: "if (true) { return 1; } return 0;", parserOptions: { ecmaVersion: 6, ecmaFeatures: { globalReturn: true } } },
+
+        // https://github.com/eslint/eslint/issues/7790
+        { code: "class Foo { constructor() { if (true) return foo; } }", parserOptions: { ecmaVersion: 6 } },
+        { code: "var Foo = class { constructor() { if (true) return foo; } }", parserOptions: { ecmaVersion: 6 } }
     ],
 
     invalid: [
@@ -46,7 +50,8 @@ ruleTester.run("consistent-return", rule, {
             code: "function foo() { if (true) return true; else return; }",
             errors: [
                 {
-                    message: "Expected a return value.",
+                    messageId: "missingReturnValue",
+                    data: { name: "Function 'foo'" },
                     type: "ReturnStatement"
                 }
             ]
@@ -56,7 +61,8 @@ ruleTester.run("consistent-return", rule, {
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Expected a return value.",
+                    messageId: "missingReturnValue",
+                    data: { name: "Arrow function" },
                     type: "ReturnStatement"
                 }
             ]
@@ -65,7 +71,8 @@ ruleTester.run("consistent-return", rule, {
             code: "function foo() { if (true) return; else return false; }",
             errors: [
                 {
-                    message: "Expected no return value.",
+                    messageId: "unexpectedReturnValue",
+                    data: { name: "Function 'foo'" },
                     type: "ReturnStatement"
                 }
             ]
@@ -74,7 +81,8 @@ ruleTester.run("consistent-return", rule, {
             code: "f(function() { if (true) return true; else return; })",
             errors: [
                 {
-                    message: "Expected a return value.",
+                    messageId: "missingReturnValue",
+                    data: { name: "Function" },
                     type: "ReturnStatement"
                 }
             ]
@@ -83,7 +91,8 @@ ruleTester.run("consistent-return", rule, {
             code: "f(function() { if (true) return; else return false; })",
             errors: [
                 {
-                    message: "Expected no return value.",
+                    messageId: "unexpectedReturnValue",
+                    data: { name: "Function" },
                     type: "ReturnStatement"
                 }
             ]
@@ -93,58 +102,9 @@ ruleTester.run("consistent-return", rule, {
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Expected no return value.",
+                    messageId: "unexpectedReturnValue",
+                    data: { name: "Arrow function" },
                     type: "ReturnStatement"
-                }
-            ]
-        },
-        {
-            code: "if (true) { return 1; } return;",
-            parserOptions: { ecmaFeatures: { globalReturn: true } },
-            errors: [
-                {
-                    message: "Expected a return value.",
-                    type: "ReturnStatement"
-                }
-            ]
-        },
-        {
-            code: "function foo() { if (a) return true; }",
-            errors: [
-                {
-                    message: "Expected to return a value at the end of this function.",
-                    type: "FunctionDeclaration",
-                    column: 10
-                }
-            ]
-        },
-        {
-            code: "function _foo() { if (a) return true; }",
-            errors: [
-                {
-                    message: "Expected to return a value at the end of this function.",
-                    type: "FunctionDeclaration",
-                    column: 10
-                }
-            ]
-        },
-        {
-            code: "f(function foo() { if (a) return true; });",
-            errors: [
-                {
-                    message: "Expected to return a value at the end of this function.",
-                    type: "FunctionExpression",
-                    column: 12
-                }
-            ]
-        },
-        {
-            code: "f(function() { if (a) return true; });",
-            errors: [
-                {
-                    message: "Expected to return a value at the end of this function.",
-                    type: "FunctionExpression",
-                    column: 3
                 }
             ]
         },
@@ -153,7 +113,8 @@ ruleTester.run("consistent-return", rule, {
             options: [{ treatUndefinedAsUnspecified: true }],
             errors: [
                 {
-                    message: "Expected a return value.",
+                    messageId: "missingReturnValue",
+                    data: { name: "Function 'foo'" },
                     type: "ReturnStatement",
                     column: 41
                 }
@@ -164,7 +125,8 @@ ruleTester.run("consistent-return", rule, {
             options: [{ treatUndefinedAsUnspecified: true }],
             errors: [
                 {
-                    message: "Expected a return value.",
+                    messageId: "missingReturnValue",
+                    data: { name: "Function 'foo'" },
                     type: "ReturnStatement",
                     column: 41
                 }
@@ -175,7 +137,8 @@ ruleTester.run("consistent-return", rule, {
             options: [{ treatUndefinedAsUnspecified: true }],
             errors: [
                 {
-                    message: "Expected no return value.",
+                    messageId: "unexpectedReturnValue",
+                    data: { name: "Function 'foo'" },
                     type: "ReturnStatement",
                     column: 46
                 }
@@ -186,9 +149,65 @@ ruleTester.run("consistent-return", rule, {
             options: [{ treatUndefinedAsUnspecified: true }],
             errors: [
                 {
-                    message: "Expected no return value.",
+                    messageId: "unexpectedReturnValue",
+                    data: { name: "Function 'foo'" },
                     type: "ReturnStatement",
                     column: 43
+                }
+            ]
+        },
+        {
+            code: "if (true) { return 1; } return;",
+            parserOptions: { ecmaFeatures: { globalReturn: true } },
+            errors: [
+                {
+                    messageId: "missingReturnValue",
+                    data: { name: "Program" },
+                    type: "ReturnStatement"
+                }
+            ]
+        },
+        {
+            code: "function foo() { if (a) return true; }",
+            errors: [
+                {
+                    messageId: "missingReturn",
+                    data: { name: "function 'foo'" },
+                    type: "FunctionDeclaration",
+                    column: 10
+                }
+            ]
+        },
+        {
+            code: "function _foo() { if (a) return true; }",
+            errors: [
+                {
+                    messageId: "missingReturn",
+                    data: { name: "function '_foo'" },
+                    type: "FunctionDeclaration",
+                    column: 10
+                }
+            ]
+        },
+        {
+            code: "f(function foo() { if (a) return true; });",
+            errors: [
+                {
+                    messageId: "missingReturn",
+                    data: { name: "function 'foo'" },
+                    type: "FunctionExpression",
+                    column: 12
+                }
+            ]
+        },
+        {
+            code: "f(function() { if (a) return true; });",
+            errors: [
+                {
+                    messageId: "missingReturn",
+                    data: { name: "function" },
+                    type: "FunctionExpression",
+                    column: 3
                 }
             ]
         },
@@ -197,7 +216,8 @@ ruleTester.run("consistent-return", rule, {
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Expected to return a value at the end of this function.",
+                    messageId: "missingReturn",
+                    data: { name: "arrow function" },
                     type: "ArrowFunctionExpression",
                     column: 6
                 }
@@ -208,7 +228,8 @@ ruleTester.run("consistent-return", rule, {
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Expected to return a value at the end of this method.",
+                    messageId: "missingReturn",
+                    data: { name: "method 'foo'" },
                     type: "FunctionExpression",
                     column: 12
                 }
@@ -219,7 +240,8 @@ ruleTester.run("consistent-return", rule, {
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Expected to return a value at the end of this method.",
+                    messageId: "missingReturn",
+                    data: { name: "method 'foo'" },
                     type: "FunctionExpression",
                     column: 10
                 }
@@ -230,9 +252,34 @@ ruleTester.run("consistent-return", rule, {
             parserOptions: { ecmaFeatures: { globalReturn: true } },
             errors: [
                 {
-                    message: "Expected to return a value at the end of this program.",
+                    messageId: "missingReturn",
+                    data: { name: "program" },
                     type: "Program",
                     column: 1
+                }
+            ]
+        },
+        {
+            code: "class A { CapitalizedFunction() { if (a) return true; } }",
+            parserOptions: { ecmaVersion: 6 },
+            errors: [
+                {
+                    messageId: "missingReturn",
+                    data: { name: "method 'CapitalizedFunction'" },
+                    type: "FunctionExpression",
+                    column: 11
+                }
+            ]
+        },
+        {
+            code: "({ constructor() { if (a) return true; } });",
+            parserOptions: { ecmaVersion: 6 },
+            errors: [
+                {
+                    messageId: "missingReturn",
+                    data: { name: "method 'constructor'" },
+                    type: "FunctionExpression",
+                    column: 4
                 }
             ]
         }

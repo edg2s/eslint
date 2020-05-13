@@ -1,7 +1,5 @@
 # require or disallow padding within blocks (padded-blocks)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes problems reported by this rule.
-
 Some style guides require block statements to start and end with blank lines. The goal is
 to improve readability by visually separating the block content and the surrounding code.
 
@@ -22,18 +20,25 @@ This rule enforces consistent empty line padding within blocks.
 
 ## Options
 
-This rule has one option, which can be a string option or an object option.
+This rule has two options, the first one can be a string option or an object option.
+The second one is an object option, it can allow exceptions.
+
+### First option
 
 String option:
 
-* `"always"` (default) requires empty lines at the beginning and ending of block statements (except `switch` statements and classes)
-* `"never"` disallows empty lines at the beginning and ending of block statements
+* `"always"` (default) requires empty lines at the beginning and ending of block statements and classes
+* `"never"` disallows empty lines at the beginning and ending of block statements and classes
 
 Object option:
 
 * `"blocks"` require or disallow padding within block statements
 * `"classes"` require or disallow padding within classes
 * `"switches"` require or disallow padding within `switch` statements
+
+### Second option
+
+* `"allowSingleLineBlocks": true` allows single-line blocks
 
 ### always
 
@@ -50,11 +55,6 @@ if (a) { b(); }
 
 if (a)
 {
-    b();
-}
-
-if (a) {
-
     b();
 }
 
@@ -353,6 +353,47 @@ if (a) {
 }
 ```
 
+### always + allowSingleLineBlocks
+
+Examples of **incorrect** code for this rule with the `"always", {"allowSingleLineBlocks": true}` options:
+
+```js
+/*eslint padded-blocks: ["error", "always", { allowSingleLineBlocks: true }]*/
+
+if (a) {
+    b();
+}
+
+if (a) {
+
+    b();
+}
+
+if (a) {
+    b();
+
+}
+```
+
+Examples of **correct** code for this rule with the `"always", {"allowSingleLineBlocks": true}` options:
+
+```js
+/*eslint padded-blocks: ["error", "always", { allowSingleLineBlocks: true }]*/
+
+if (a) { b(); }
+
+if (a) {
+
+    b();
+
+}
+```
+
 ## When Not To Use It
 
 You can turn this rule off if you are not concerned with the consistency of padding within blocks.
+
+## Related Rules
+
+* [lines-between-class-members](lines-between-class-members.md)
+* [padding-line-between-statements](padding-line-between-statements.md)

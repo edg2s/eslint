@@ -30,7 +30,7 @@ foo("var a = 0");
 this.eval("var a = 0");
 ```
 
-Examples of **incorrect** code for this rule with browser environment:
+Example of additional **incorrect** code for this rule when `browser` environment is set to `true`:
 
 ```js
 /*eslint no-eval: "error"*/
@@ -39,7 +39,7 @@ Examples of **incorrect** code for this rule with browser environment:
 window.eval("var a = 0");
 ```
 
-Examples of **incorrect** code for this rule with node environment:
+Example of additional **incorrect** code for this rule when `node` environment is set to `true`:
 
 ```js
 /*eslint no-eval: "error"*/
@@ -80,7 +80,7 @@ Indirect calls to `eval` are less dangerous than direct calls to `eval` because 
 }
 ```
 
-With this option the following patterns are considered problems:
+Example of **incorrect** code for this rule with the `{"allowIndirect": true}` option:
 
 ```js
 /*eslint no-eval: "error"*/
@@ -90,7 +90,7 @@ var obj = { x: "foo" },
     value = eval("obj." + key);
 ```
 
-With this option the following patterns are not considered problems:
+Examples of **correct** code for this rule with the `{"allowIndirect": true}` option:
 
 ```js
 /*eslint no-eval: "error"*/
@@ -139,8 +139,8 @@ global.eval("var a = 0");
 
 ## Further Reading
 
-* [Eval is Evil, Part One](http://blogs.msdn.com/b/ericlippert/archive/2003/11/01/53329.aspx)
-* [How evil is eval](http://javascriptweblog.wordpress.com/2010/04/19/how-evil-is-eval/)
+* [Eval is Evil, Part One](https://blogs.msdn.com/b/ericlippert/archive/2003/11/01/53329.aspx)
+* [How evil is eval](https://javascriptweblog.wordpress.com/2010/04/19/how-evil-is-eval/)
 
 ## Related Rules
 

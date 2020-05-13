@@ -10,91 +10,79 @@
 //------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/no-duplicate-imports"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 //------------------------------------------------------------------------------
 // Tests
 //------------------------------------------------------------------------------
 
-const ruleTester = new RuleTester();
+const ruleTester = new RuleTester({ parserOptions: { ecmaVersion: 6, sourceType: "module" } });
 
 ruleTester.run("no-duplicate-imports", rule, {
     valid: [
-        { code: "import os from \"os\";\nimport fs from \"fs\";", parserOptions: { sourceType: "module" } },
-        { code: "import { merge } from \"lodash-es\";", parserOptions: { sourceType: "module" } },
-        { code: "import _, { merge } from \"lodash-es\";", parserOptions: { sourceType: "module" } },
-        { code: "import * as Foobar from \"async\";", parserOptions: { sourceType: "module" } },
-        { code: "import \"foo\"", parserOptions: { sourceType: "module" } },
-        { code: "import os from \"os\";\nexport { something } from \"os\";", parserOptions: { sourceType: "module" } },
+        "import os from \"os\";\nimport fs from \"fs\";",
+        "import { merge } from \"lodash-es\";",
+        "import _, { merge } from \"lodash-es\";",
+        "import * as Foobar from \"async\";",
+        "import \"foo\"",
+        "import os from \"os\";\nexport { something } from \"os\";",
         {
             code: "import os from \"os\";\nexport { hello } from \"hello\";",
-            parserOptions: { sourceType: "module" },
             options: [{ includeExports: true }]
         },
         {
             code: "import os from \"os\";\nexport * from \"hello\";",
-            parserOptions: { sourceType: "module" },
             options: [{ includeExports: true }]
         },
         {
             code: "import os from \"os\";\nexport { hello as hi } from \"hello\";",
-            parserOptions: { sourceType: "module" },
             options: [{ includeExports: true }]
         },
         {
             code: "import os from \"os\";\nexport default function(){};",
-            parserOptions: { sourceType: "module" },
             options: [{ includeExports: true }]
         },
         {
             code: "import { merge } from \"lodash-es\";\nexport { merge as lodashMerge }",
-            parserOptions: { sourceType: "module" },
             options: [{ includeExports: true }]
         }
     ],
     invalid: [
         {
             code: "import \"fs\";\nimport \"fs\"",
-            parserOptions: { sourceType: "module" },
-            errors: [{ message: "'fs' import is duplicated.", type: "ImportDeclaration" }]
+            errors: [{ messageId: "import", data: { module: "fs" }, type: "ImportDeclaration" }]
         },
         {
             code: "import { merge } from \"lodash-es\";import { find } from \"lodash-es\";",
-            parserOptions: { sourceType: "module" },
-            errors: [{ message: "'lodash-es' import is duplicated.", type: "ImportDeclaration" }]
+            errors: [{ messageId: "import", data: { module: "lodash-es" }, type: "ImportDeclaration" }]
         },
         {
             code: "import { merge } from \"lodash-es\";import _ from \"lodash-es\";",
-            parserOptions: { sourceType: "module" },
-            errors: [{ message: "'lodash-es' import is duplicated.", type: "ImportDeclaration" }]
+            errors: [{ messageId: "import", data: { module: "lodash-es" }, type: "ImportDeclaration" }]
         },
         {
             code: "export { os } from \"os\";\nexport { something } from \"os\";",
-            parserOptions: { sourceType: "module" },
             options: [{ includeExports: true }],
-            errors: [{ message: "'os' export is duplicated.", type: "ExportNamedDeclaration" }]
+            errors: [{ messageId: "export", data: { module: "os" }, type: "ExportNamedDeclaration" }]
         },
         {
             code: "import os from \"os\"; export { os as foobar } from \"os\";\nexport { something } from \"os\";",
-            parserOptions: { sourceType: "module" },
             options: [{ includeExports: true }],
             errors: [
-                { message: "'os' export is duplicated as import.", type: "ExportNamedDeclaration" },
-                { message: "'os' export is duplicated.", type: "ExportNamedDeclaration" },
-                { message: "'os' export is duplicated as import.", type: "ExportNamedDeclaration" }
+                { messageId: "exportAs", data: { module: "os" }, type: "ExportNamedDeclaration" },
+                { messageId: "export", data: { module: "os" }, type: "ExportNamedDeclaration" },
+                { messageId: "exportAs", data: { module: "os" }, type: "ExportNamedDeclaration" }
             ]
         },
         {
             code: "import os from \"os\";\nexport { something } from \"os\";",
-            parserOptions: { sourceType: "module" },
             options: [{ includeExports: true }],
-            errors: [{ message: "'os' export is duplicated as import.", type: "ExportNamedDeclaration" }]
+            errors: [{ messageId: "exportAs", data: { module: "os" }, type: "ExportNamedDeclaration" }]
         },
         {
             code: "import os from \"os\";\nexport * from \"os\";",
-            parserOptions: { sourceType: "module" },
             options: [{ includeExports: true }],
-            errors: [{ message: "'os' export is duplicated as import.", type: "ExportAllDeclaration" }]
+            errors: [{ messageId: "exportAs", data: { module: "os" }, type: "ExportAllDeclaration" }]
         }
     ]
 });

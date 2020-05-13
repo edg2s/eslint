@@ -5,11 +5,10 @@
 "use strict";
 
 const rule = require("../../../lib/rules/spaced-comment"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 const ruleTester = new RuleTester(),
-    validShebangProgram = "#!/path/to/node\nvar a = 3;",
-    invalidShebangProgram = "#!/path/to/node\n#!/second/shebang\nvar a = 3;";
+    validShebangProgram = "#!/path/to/node\nvar a = 3;";
 
 ruleTester.run("spaced-comment", rule, {
 
@@ -112,6 +111,12 @@ ruleTester.run("spaced-comment", rule, {
             }]
         },
         {
+            code: "/*\u2028x*/",
+            options: ["always", {
+                markers: ["/", "!<"]
+            }]
+        },
+        {
             code: "///xmldoc style comment",
             options: ["never", {
                 markers: ["/", "!<"]
@@ -173,11 +178,11 @@ ruleTester.run("spaced-comment", rule, {
         },
         {
             code: "// space only at start; valid since balanced doesn't apply to line comments",
-            options: ["always", { block: { balanced: true }}]
+            options: ["always", { block: { balanced: true } }]
         },
         {
             code: "//space only at end; valid since balanced doesn't apply to line comments ",
-            options: ["never", { block: { balanced: true }}]
+            options: ["never", { block: { balanced: true } }]
         },
 
         // block comments
@@ -241,19 +246,19 @@ ruleTester.run("spaced-comment", rule, {
         // balanced block comments
         {
             code: "var a = 1; /* comment */",
-            options: ["always", { block: { balanced: true }}]
+            options: ["always", { block: { balanced: true } }]
         },
         {
             code: "var a = 1; /*comment*/",
-            options: ["never", { block: { balanced: true }}]
+            options: ["never", { block: { balanced: true } }]
         },
         {
             code: "function foo(/* height */a) { \n }",
-            options: ["always", { block: { balanced: true }}]
+            options: ["always", { block: { balanced: true } }]
         },
         {
             code: "function foo(/*height*/a) { \n }",
-            options: ["never", { block: { balanced: true }}]
+            options: ["never", { block: { balanced: true } }]
         },
         {
             code: "var a = 1; /*######*/",
@@ -283,7 +288,7 @@ ruleTester.run("spaced-comment", rule, {
         },
         {
             code: "/*global ABC */",
-            options: ["always", { markers: ["global"], block: { balanced: true }}]
+            options: ["always", { markers: ["global"], block: { balanced: true } }]
         },
 
         // markers & exceptions
@@ -294,6 +299,48 @@ ruleTester.run("spaced-comment", rule, {
         {
             code: "///--------\r\n/// test\r\n///--------\r\n/* blah */",
             options: ["always", { markers: ["/"], exceptions: ["-"], block: { markers: [] } }]
+        },
+        {
+            code: "/***\u2028*/",
+            options: ["always", { exceptions: ["*"] }]
+        },
+
+        // ignore marker-only comments, https://github.com/eslint/eslint/issues/12036
+        {
+            code: "//#endregion",
+            options: ["always", { line: { markers: ["#endregion"] } }]
+        },
+        {
+            code: "/*foo*/",
+            options: ["always", { block: { markers: ["foo"] } }]
+        },
+        {
+            code: "/*foo*/",
+            options: ["always", { block: { markers: ["foo"], balanced: true } }]
+        },
+        {
+            code: "/*foo*/ /*bar*/",
+            options: ["always", { markers: ["foo", "bar"] }]
+        },
+        {
+            code: "//foo\n//bar",
+            options: ["always", { markers: ["foo", "bar"] }]
+        },
+        {
+            code: "/* foo */",
+            options: ["never", { markers: [" foo "] }]
+        },
+        {
+            code: "// foo ",
+            options: ["never", { markers: [" foo "] }]
+        },
+        {
+            code: "//*", // "*" is a marker by default
+            options: ["always"]
+        },
+        {
+            code: "/***/", // "*" is a marker by default
+            options: ["always"]
         }
     ],
 
@@ -301,29 +348,32 @@ ruleTester.run("spaced-comment", rule, {
         {
             code: "//An invalid comment NOT starting with space\nvar a = 1;",
             output: "// An invalid comment NOT starting with space\nvar a = 1;",
+            options: ["always"],
             errors: [{
-                messsage: "Expected space or tab after '//' in comment.",
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "//" },
                 type: "Line"
-            }],
-            options: ["always"]
+            }]
         },
         {
             code: "// An invalid comment starting with space\nvar a = 2;",
             output: "//An invalid comment starting with space\nvar a = 2;",
+            options: ["never"],
             errors: [{
-                message: "Unexpected space or tab after '//' in comment.",
+                messageId: "unexpectedSpaceAfter",
+                data: { refChar: "//" },
                 type: "Line"
-            }],
-            options: ["never"]
+            }]
         },
         {
             code: "//   An invalid comment starting with tab\nvar a = 2;",
             output: "//An invalid comment starting with tab\nvar a = 2;",
+            options: ["never"],
             errors: [{
-                message: "Unexpected space or tab after '//' in comment.",
+                messageId: "unexpectedSpaceAfter",
+                data: { refChar: "//" },
                 type: "Line"
-            }],
-            options: ["never"]
+            }]
         },
         {
 
@@ -334,65 +384,57 @@ ruleTester.run("spaced-comment", rule, {
              */
             code: "//*********************-\n// Comment Block 3\n//***********************",
             output: "//* ********************-\n// Comment Block 3\n//***********************",
-            errors: [{
-                message: "Expected exception block, space or tab after '//*' in comment.",
-                type: "Line"
-            }],
             options: ["always", {
                 exceptions: ["-", "=", "*", "#", "!@#"]
+            }],
+            errors: [{
+                messageId: "expectedExceptionAfter",
+                data: { refChar: "//*" },
+                type: "Line"
             }]
         },
         {
             code: "//-=-=-=-=-=-=\n// A comment\n//-=-=-=-=-=-=",
             output: "// -=-=-=-=-=-=\n// A comment\n// -=-=-=-=-=-=",
+            options: ["always", {
+                exceptions: ["-", "=", "*", "#", "!@#"]
+            }],
             errors: [
                 {
-                    message: "Expected exception block, space or tab after '//' in comment.",
+                    messageId: "expectedExceptionAfter",
+                    data: { refChar: "//" },
                     type: "Line"
                 },
                 {
-                    message: "Expected exception block, space or tab after '//' in comment.",
+                    messageId: "expectedExceptionAfter",
+                    data: { refChar: "//" },
                     type: "Line"
                 }
-            ],
-            options: ["always", {
-                exceptions: ["-", "=", "*", "#", "!@#"]
-            }]
+            ]
         },
         {
             code: "//!<docblock style comment",
             output: "//!< docblock style comment",
-            errors: 1,
             options: ["always", {
                 markers: ["/", "!<"]
-            }]
+            }],
+            errors: 1
         },
         {
             code: "//!< docblock style comment",
             output: "//!<docblock style comment",
-            errors: 1,
             options: ["never", {
                 markers: ["/", "!<"]
-            }]
-        },
-        {
-            code: invalidShebangProgram,
-            output: "#!/path/to/node\n#!/second/shebang\nvar a = 3;",
-            errors: 1,
-            options: ["always"]
-        },
-        {
-            code: invalidShebangProgram,
-            output: "#!/path/to/node\n#!/second/shebang\nvar a = 3;",
-            errors: 1,
-            options: ["never"]
+            }],
+            errors: 1
         },
         {
             code: "var a = 1; /* A valid comment starting with space */",
             output: "var a = 1; /*A valid comment starting with space */",
             options: ["never"],
             errors: [{
-                message: "Unexpected space or tab after '/*' in comment.",
+                messageId: "unexpectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -403,7 +445,8 @@ ruleTester.run("spaced-comment", rule, {
                 exceptions: ["-", "=", "*", "!@#"]
             }],
             errors: [{
-                message: "Expected exception block, space or tab after '/*' in comment.",
+                messageId: "expectedExceptionAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -412,7 +455,8 @@ ruleTester.run("spaced-comment", rule, {
             output: "var a = 1; /* A valid comment NOT starting with space */",
             options: ["always"],
             errors: [{
-                message: "Expected space or tab after '/*' in comment.",
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -421,7 +465,8 @@ ruleTester.run("spaced-comment", rule, {
             output: "function foo(/*height */a) { \n }",
             options: ["never"],
             errors: [{
-                message: "Unexpected space or tab after '/*' in comment.",
+                messageId: "unexpectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -430,7 +475,8 @@ ruleTester.run("spaced-comment", rule, {
             output: "function foo(/* height */a) { \n }",
             options: ["always"],
             errors: [{
-                message: "Expected space or tab after '/*' in comment.",
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -439,7 +485,8 @@ ruleTester.run("spaced-comment", rule, {
             output: "function foo(a/* height */) { \n }",
             options: ["always"],
             errors: [{
-                message: "Expected space or tab after '/*' in comment.",
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -448,7 +495,8 @@ ruleTester.run("spaced-comment", rule, {
             output: "/*\n *Test\n */",
             options: ["never"],
             errors: [{
-                message: "Unexpected space or tab after '/*' in comment.",
+                messageId: "unexpectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -459,8 +507,8 @@ ruleTester.run("spaced-comment", rule, {
                 block: { exceptions: ["-", "=", "*", "#", "!@#"] }
             }],
             errors: [
-                { message: "Expected space or tab after '//' in comment.", type: "Line"},
-                { message: "Expected space or tab after '//' in comment.", type: "Line"}
+                { messageId: "expectedSpaceAfter", data: { refChar: "//" }, type: "Line" },
+                { messageId: "expectedSpaceAfter", data: { refChar: "//" }, type: "Line" }
             ]
         },
         {
@@ -470,7 +518,8 @@ ruleTester.run("spaced-comment", rule, {
                 line: { exceptions: ["-", "=", "*", "#", "!@#"] }
             }],
             errors: [{
-                message: "Expected space or tab after '/*' in comment.",
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -481,7 +530,8 @@ ruleTester.run("spaced-comment", rule, {
                 block: { markers: ["/", "!<"] }
             }],
             errors: [{
-                message: "Expected space or tab after '//' in comment.",
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "//" },
                 type: "Line"
             }]
         },
@@ -490,7 +540,8 @@ ruleTester.run("spaced-comment", rule, {
             output: "/* !\n *comment\n */",
             options: ["always", { line: { markers: ["!"] } }],
             errors: [{
-                message: "Expected space or tab after '/*' in comment.",
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -499,7 +550,8 @@ ruleTester.run("spaced-comment", rule, {
             output: "///--------\r\n/// test\r\n///--------\r\n/* / blah *//*-----*/",
             options: ["always", { markers: ["/"], exceptions: ["-"], block: { markers: [] } }],
             errors: [{
-                message: "Expected exception block, space or tab after '/*' in comment.",
+                messageId: "expectedExceptionAfter",
+                data: { refChar: "/*" },
                 type: "Block"
             }]
         },
@@ -508,12 +560,14 @@ ruleTester.run("spaced-comment", rule, {
             output: "///--------\r\n/// test\r\n///--------\r\n/* / blah */ /* -----*/",
             options: ["always", { line: { markers: ["/"], exceptions: ["-"] } }],
             errors: [{
-                message: "Expected space or tab after '/*' in comment.",
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block",
                 line: 4,
                 column: 1
             }, {
-                message: "Expected space or tab after '/*' in comment.",
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "/*" },
                 type: "Block",
                 line: 4,
                 column: 13
@@ -524,36 +578,40 @@ ruleTester.run("spaced-comment", rule, {
         {
             code: "var a = 1; /* A balanced comment starting with space*/",
             output: "var a = 1; /* A balanced comment starting with space */",
-            options: ["always", {block: { balanced: true }}],
+            options: ["always", { block: { balanced: true } }],
             errors: [{
-                message: "Expected space or tab before '*/' in comment.",
+                messageId: "expectedSpaceBefore",
+                data: { refChar: "/**" },
                 type: "Block"
             }]
         },
         {
             code: "var a = 1; /*A balanced comment NOT starting with space */",
             output: "var a = 1; /*A balanced comment NOT starting with space*/",
-            options: ["never", {block: { balanced: true }}],
+            options: ["never", { block: { balanced: true } }],
             errors: [{
-                message: "Unexpected space or tab before '*/' in comment.",
+                messageId: "unexpectedSpaceBefore",
+                data: { refChar: "*/" },
                 type: "Block"
             }]
         },
         {
             code: "function foo(/* height*/a) { \n }",
             output: "function foo(/* height */a) { \n }",
-            options: ["always", { block: { balanced: true }}],
+            options: ["always", { block: { balanced: true } }],
             errors: [{
-                message: "Expected space or tab before '*/' in comment.",
+                messageId: "expectedSpaceBefore",
+                data: { refChar: "/**" },
                 type: "Block"
             }]
         },
         {
             code: "function foo(/*height */a) { \n }",
             output: "function foo(/*height*/a) { \n }",
-            options: ["never", { block: { balanced: true }}],
+            options: ["never", { block: { balanced: true } }],
             errors: [{
-                message: "Unexpected space or tab before '*/' in comment.",
+                messageId: "unexpectedSpaceBefore",
+                data: { refChar: "*/" },
                 type: "Block"
             }]
         },
@@ -562,7 +620,8 @@ ruleTester.run("spaced-comment", rule, {
             output: "/*! comment */",
             options: ["always", { markers: ["!"], block: { balanced: true } }],
             errors: [{
-                message: "Expected space or tab before '*/' in comment.",
+                messageId: "expectedSpaceBefore",
+                data: { refChar: "/**" },
                 type: "Block"
             }]
         },
@@ -571,9 +630,76 @@ ruleTester.run("spaced-comment", rule, {
             output: "/*!comment*/",
             options: ["never", { markers: ["!"], block: { balanced: true } }],
             errors: [{
-                message: "Unexpected space or tab before '*/' in comment.",
+                messageId: "unexpectedSpaceBefore",
+                data: { refChar: "*/" },
                 type: "Block"
             }]
+        },
+
+        // not a marker-only comment, regression tests for https://github.com/eslint/eslint/issues/12036
+        {
+            code: "//#endregionfoo",
+            output: "//#endregion foo",
+            options: ["always", { line: { markers: ["#endregion"] } }],
+            errors: [{
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "//#endregion" },
+                type: "Line"
+            }]
+        },
+        {
+            code: "/*#endregion*/",
+            output: "/* #endregion*/", // not an allowed marker for block comments
+            options: ["always", { line: { markers: ["#endregion"] } }],
+            errors: [{
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "/*" },
+                type: "Block"
+            }]
+        },
+        {
+            code: "/****/",
+            output: "/** **/",
+            options: ["always"],
+            errors: [{
+                messageId: "expectedSpaceAfter",
+                data: { refChar: "/**" },
+                type: "Block"
+            }]
+        },
+        {
+            code: "/****/",
+            output: "/** * */",
+            options: ["always", { block: { balanced: true } }],
+            errors: [
+                {
+                    messageId: "expectedSpaceAfter",
+                    data: { refChar: "/**" },
+                    type: "Block"
+                },
+                {
+                    messageId: "expectedSpaceBefore",
+                    data: { refChar: "*/" },
+                    type: "Block"
+                }
+            ]
+        },
+        {
+            code: "/* foo */",
+            output: "/*foo*/",
+            options: ["never", { block: { markers: ["foo"], balanced: true } }], // not " foo "
+            errors: [
+                {
+                    messageId: "unexpectedSpaceAfter",
+                    data: { refChar: "/*" },
+                    type: "Block"
+                },
+                {
+                    messageId: "unexpectedSpaceBefore",
+                    data: { refChar: "*/" },
+                    type: "Block"
+                }
+            ]
         }
     ]
 

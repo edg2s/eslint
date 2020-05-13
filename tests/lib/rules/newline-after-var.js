@@ -1,6 +1,7 @@
 /**
  * @fileoverview Tests for newline-after-var rule.
  * @author Gopal Venkatesan
+ * @deprecated
  */
 
 "use strict";
@@ -10,7 +11,7 @@
 //------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/newline-after-var"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 //------------------------------------------------------------------------------
 // Fixtures
@@ -93,12 +94,12 @@ const NO_BREAK = "var greet = 'hello';console.log(greet);",
     NO_BLANK_BEFORE_CASE = "switch(a) {\ncase 0:\nvar foo;\ncase 1:}";
 
 const ALWAYS_ERROR = {
-    message: "Expected blank line after variable declarations.",
+    messageId: "expected",
     type: "VariableDeclaration"
 };
 
 const NEVER_ERROR = {
-    message: "Unexpected blank line after variable declarations.",
+    messageId: "unexpected",
     type: "VariableDeclaration"
 };
 
@@ -205,29 +206,29 @@ ruleTester.run("newline-after-var", rule, {
         { code: FOR_OF_LOOP_WITH_VAR, options: ["never"], parserOptions: { ecmaVersion: 6 } },
 
         // should handle export specifiers
-        { code: EXPORT_WITH_LET, options: ["never"], parserOptions: { sourceType: "module" } },
-        { code: EXPORT_WITH_LET, options: ["always"], parserOptions: { sourceType: "module" } },
-        { code: EXPORT_WITH_VAR, options: ["never"], parserOptions: { sourceType: "module" } },
-        { code: EXPORT_WITH_VAR, options: ["always"], parserOptions: { sourceType: "module" } },
-        { code: EXPORT_WITH_CONST, options: ["never"], parserOptions: { sourceType: "module" } },
-        { code: EXPORT_WITH_CONST, options: ["always"], parserOptions: { sourceType: "module" } },
+        { code: EXPORT_WITH_LET, options: ["never"], parserOptions: { ecmaVersion: 6, sourceType: "module" } },
+        { code: EXPORT_WITH_LET, options: ["always"], parserOptions: { ecmaVersion: 6, sourceType: "module" } },
+        { code: EXPORT_WITH_VAR, options: ["never"], parserOptions: { ecmaVersion: 6, sourceType: "module" } },
+        { code: EXPORT_WITH_VAR, options: ["always"], parserOptions: { ecmaVersion: 6, sourceType: "module" } },
+        { code: EXPORT_WITH_CONST, options: ["never"], parserOptions: { ecmaVersion: 6, sourceType: "module" } },
+        { code: EXPORT_WITH_CONST, options: ["always"], parserOptions: { ecmaVersion: 6, sourceType: "module" } },
 
         // should allow no blank line at end of block
         { code: END_OF_FUNCTION, options: ["always"] },
         { code: END_OF_FUNCTION, options: ["never"] },
-        { code: NOT_END_OF_FUNCTION, options: ["never"]},
+        { code: NOT_END_OF_FUNCTION, options: ["never"] },
         { code: END_OF_FUNCTION_EXPRESSION, options: ["always"] },
         { code: END_OF_FUNCTION_EXPRESSION, options: ["never"] },
-        { code: NOT_END_OF_FUNCTION_EXPRESSION, options: ["never"]},
-        { code: END_OF_ARROW_FUNCTION, options: ["always"], parserOptions: { ecmaVersion: 6 }},
-        { code: END_OF_ARROW_FUNCTION, options: ["never"], parserOptions: { ecmaVersion: 6 }},
-        { code: NOT_END_OF_ARROW_FUNCTION, options: ["never"], parserOptions: { ecmaVersion: 6 }},
-        { code: END_OF_BLOCK, options: ["always"]},
-        { code: END_OF_BLOCK, options: ["never"]},
-        { code: END_OF_IF, options: ["always"]},
-        { code: END_OF_IF, options: ["never"]},
-        { code: END_OF_SWITCH, options: ["always"]},
-        { code: END_OF_SWITCH, options: ["never"]},
+        { code: NOT_END_OF_FUNCTION_EXPRESSION, options: ["never"] },
+        { code: END_OF_ARROW_FUNCTION, options: ["always"], parserOptions: { ecmaVersion: 6 } },
+        { code: END_OF_ARROW_FUNCTION, options: ["never"], parserOptions: { ecmaVersion: 6 } },
+        { code: NOT_END_OF_ARROW_FUNCTION, options: ["never"], parserOptions: { ecmaVersion: 6 } },
+        { code: END_OF_BLOCK, options: ["always"] },
+        { code: END_OF_BLOCK, options: ["never"] },
+        { code: END_OF_IF, options: ["always"] },
+        { code: END_OF_IF, options: ["never"] },
+        { code: END_OF_SWITCH, options: ["always"] },
+        { code: END_OF_SWITCH, options: ["never"] },
 
         // should handle one/no blank before case.
         { code: ONE_BLANK_BEFORE_CASE, options: ["always"] },
@@ -277,7 +278,7 @@ ruleTester.run("newline-after-var", rule, {
         { code: CONST_NO_BLANK, output: CONST_ONE_BLANK, options: ["always"], parserOptions: { ecmaVersion: 6 }, errors: [ALWAYS_ERROR] },
         { code: NOT_END_OF_FUNCTION, output: NOT_END_OF_FUNCTION_ONE_BLANK, options: ["always"], errors: [ALWAYS_ERROR] },
         { code: NOT_END_OF_FUNCTION_EXPRESSION, output: NOT_END_OF_FUNCTION_EXPRESSION_ONE_BLANK, options: ["always"], errors: [ALWAYS_ERROR] },
-        { code: NOT_END_OF_ARROW_FUNCTION, output: NOT_END_OF_ARROW_FUNCTION_ONE_BLANK, options: ["always"], parserOptions: { ecmaVersion: 6 }, errors: [ALWAYS_ERROR]},
+        { code: NOT_END_OF_ARROW_FUNCTION, output: NOT_END_OF_ARROW_FUNCTION_ONE_BLANK, options: ["always"], parserOptions: { ecmaVersion: 6 }, errors: [ALWAYS_ERROR] },
         { code: NO_BLANK_BEFORE_CASE, output: ONE_BLANK_BEFORE_CASE, options: ["always"], errors: [ALWAYS_ERROR] },
 
         // should disallow blank lines in "never" mode
@@ -285,7 +286,7 @@ ruleTester.run("newline-after-var", rule, {
         { code: TWO_BLANKS, output: NO_BLANK, options: ["never"], errors: [NEVER_ERROR] },
         { code: THREE_BLANKS, output: NO_BLANK, options: ["never"], errors: [NEVER_ERROR] },
         { code: ONE_BLANK_WITH_TRAILING_WS, output: NO_BLANK_WITH_TRAILING_WS, options: ["never"], errors: [NEVER_ERROR] },
-        { code: ONE_BLANK_WITH_INLINE_COMMENT, NO_BLANK_WITH_INLINE_COMMENT, options: ["never"], errors: [NEVER_ERROR] },
+        { code: ONE_BLANK_WITH_INLINE_COMMENT, output: NO_BLANK_WITH_INLINE_COMMENT, options: ["never"], errors: [NEVER_ERROR] },
         { code: MULTI_VAR_ONE_BLANK, output: MULTI_VAR_NO_BLANK, options: ["never"], errors: [NEVER_ERROR] },
         { code: MULTI_DEC_ONE_BLANK, output: MULTI_DEC_NO_BLANK, options: ["never"], errors: [NEVER_ERROR] },
         { code: MULTI_LINE_ONE_BLANK, output: MULTI_LINE_NO_BLANK, options: ["never"], errors: [NEVER_ERROR] },

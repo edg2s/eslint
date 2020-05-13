@@ -10,7 +10,7 @@
 
 const rule = require("../../../lib/rules/max-lines"),
 
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 
 //------------------------------------------------------------------------------
@@ -19,22 +19,12 @@ const rule = require("../../../lib/rules/max-lines"),
 
 const ruleTester = new RuleTester();
 
-/**
- * Returns the error message with the specified max number of lines
- * @param {number} limitLines Maximum number of lines
- * @param {number} actualLines Actual number of lines
- * @returns {string} error message
- */
-function errorMessage(limitLines, actualLines) {
-    return `File must be at most ${limitLines} lines long. It's ${actualLines} lines long.`;
-}
-
 ruleTester.run("max-lines", rule, {
     valid: [
-        {code: "var x;" },
-        {code: "var xy;\nvar xy;" },
-        {code: "var xy;\nvar xy;", options: [2] },
-        {code: "var xy;\nvar xy;", options: [{max: 2}] },
+        "var x;",
+        "var xy;\nvar xy;",
+        { code: "var xy;\nvar xy;", options: [2] },
+        { code: "var xy;\nvar xy;", options: [{ max: 2 }] },
         {
             code: [
                 "//a single line comment",
@@ -44,14 +34,14 @@ ruleTester.run("max-lines", rule, {
                 " really really",
                 " long comment*/ "
             ].join("\n"),
-            options: [{max: 2, skipComments: true} ]
+            options: [{ max: 2, skipComments: true }]
         },
         {
             code: [
                 "var x; /* inline comment",
                 " spanning multiple lines */ var z;"
             ].join("\n"),
-            options: [{max: 2, skipComments: true} ]
+            options: [{ max: 2, skipComments: true }]
         },
         {
             code: [
@@ -59,7 +49,7 @@ ruleTester.run("max-lines", rule, {
                 " spanning multiple lines */",
                 "var z;"
             ].join("\n"),
-            options: [{max: 2, skipComments: true} ]
+            options: [{ max: 2, skipComments: true }]
         },
         {
             code: [
@@ -69,7 +59,7 @@ ruleTester.run("max-lines", rule, {
                 "\t  ",
                 "var y;"
             ].join("\n"),
-            options: [{max: 2, skipBlankLines: true} ]
+            options: [{ max: 2, skipBlankLines: true }]
         },
         {
             code: [
@@ -82,24 +72,24 @@ ruleTester.run("max-lines", rule, {
                 " really really",
                 " long comment*/"
             ].join("\n"),
-            options: [{max: 2, skipComments: true, skipBlankLines: true} ]
+            options: [{ max: 2, skipComments: true, skipBlankLines: true }]
         }
     ],
     invalid: [
         {
             code: "var xyz;\nvar xyz;\nvar xyz;",
             options: [2],
-            errors: [{message: errorMessage(2, 3)}]
+            errors: [{ messageId: "exceed", data: { max: 2, actual: 3 } }]
         },
         {
             code: "/* a multiline comment\n that goes to many lines*/\nvar xy;\nvar xy;",
             options: [2],
-            errors: [{message: errorMessage(2, 4)}]
+            errors: [{ messageId: "exceed", data: { max: 2, actual: 4 } }]
         },
         {
             code: "//a single line comment\nvar xy;\nvar xy;",
             options: [2],
-            errors: [{message: errorMessage(2, 3)}]
+            errors: [{ messageId: "exceed", data: { max: 2, actual: 3 } }]
         },
         {
             code: [
@@ -109,8 +99,8 @@ ruleTester.run("max-lines", rule, {
                 "",
                 "var y;"
             ].join("\n"),
-            options: [{max: 2} ],
-            errors: [{message: errorMessage(2, 5)}]
+            options: [{ max: 2 }],
+            errors: [{ messageId: "exceed", data: { max: 2, actual: 5 } }]
         },
         {
             code: [
@@ -123,8 +113,8 @@ ruleTester.run("max-lines", rule, {
                 " really really",
                 " long comment*/"
             ].join("\n"),
-            options: [{max: 2, skipComments: true } ],
-            errors: [{message: errorMessage(2, 4)}]
+            options: [{ max: 2, skipComments: true }],
+            errors: [{ messageId: "exceed", data: { max: 2, actual: 4 } }]
         },
         {
             code: [
@@ -132,8 +122,8 @@ ruleTester.run("max-lines", rule, {
                 "var y;",
                 "var z;"
             ].join("\n"),
-            options: [{max: 2, skipComments: true} ],
-            errors: [{message: errorMessage(2, 3)}]
+            options: [{ max: 2, skipComments: true }],
+            errors: [{ messageId: "exceed", data: { max: 2, actual: 3 } }]
         },
         {
             code: [
@@ -142,8 +132,8 @@ ruleTester.run("max-lines", rule, {
                 "var y;",
                 "var z;"
             ].join("\n"),
-            options: [{max: 2, skipComments: true} ],
-            errors: [{message: errorMessage(2, 3)}]
+            options: [{ max: 2, skipComments: true }],
+            errors: [{ messageId: "exceed", data: { max: 2, actual: 3 } }]
         },
         {
             code: [
@@ -156,22 +146,18 @@ ruleTester.run("max-lines", rule, {
                 " really really",
                 " long comment*/"
             ].join("\n"),
-            options: [{max: 2, skipBlankLines: true } ],
-            errors: [{message: errorMessage(2, 6)}]
+            options: [{ max: 2, skipBlankLines: true }],
+            errors: [{ messageId: "exceed", data: { max: 2, actual: 6 } }]
         },
         {
-            code: [
-                "//a single line comment",
-                "var xy;",
-                " ",
-                "var xy;",
-                " ",
-                " /* a multiline",
-                " really really",
-                " long comment*/"
-            ].join("\n"),
-            options: [{max: 2, skipComments: true } ],
-            errors: [{message: errorMessage(2, 4)}]
+            code: "AAAAAAAA\n".repeat(301).trim(),
+            options: [{}],
+            errors: [{ messageId: "exceed", data: { max: 300, actual: 301 } }]
+        },
+        {
+            code: "A",
+            options: [{ max: 0 }],
+            errors: [{ messageId: "exceed", data: { max: 0, actual: 1 } }]
         }
     ]
 });

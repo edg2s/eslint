@@ -1,22 +1,22 @@
-# Disallow tabs in file (no-tabs)
+# disallow all tabs (no-tabs)
 
-some style guides don't allow the use of tab characters anywhere. So they would want to disallow tab anywhere inside a file including comments.
+Some style guides don't allow the use of tab characters at all, including within comments.
 
 ## Rule Details
 
-This rule looks for tabs inside the file. It can abe anywhere inside code or comments or anything.
+This rule looks for tabs anywhere inside a file: code, comments or anything else.
 
 Examples of **incorrect** code for this rule:
 
 ```js
-var a /t= 2;
+var a \t= 2;
 
 /**
-* /t/t its a test function
+* \t\t it's a test function
 */
 function test(){}
 
-var x = 1; // /t test
+var x = 1; // \t test
 ```
 
 Examples of **correct** code for this rule:
@@ -25,17 +25,37 @@ Examples of **correct** code for this rule:
 var a = 2;
 
 /**
-* its a test function
+* it's a test function
 */
 function test(){}
 
 var x = 1; // test
 ```
 
+### Options
+
+This rule has an optional object option with the following properties:
+
+* `allowIndentationTabs` (default: false): If this is set to true, then the rule will not report tabs used for indentation.
+
+#### allowIndentationTabs
+
+Examples of **correct** code for this rule with the `allowIndentationTabs: true` option:
+
+```js
+/* eslint no-tabs: ["error", { allowIndentationTabs: true }] */
+
+function test() {
+\tdoSomething();
+}
+
+\t// comment with leading indentation tab
+```
+
 ## When Not To Use It
 
-If you have established a standard where having tabs is fine.
+If you have established a standard where having tabs is fine, then you can disable this rule.
 
 ## Compatibility
 
-* **JSCS**: [disallowTabs](http://jscs.info/rule/disallowTabs)
+* **JSCS**: [disallowTabs](https://jscs-dev.github.io/rule/disallowTabs)

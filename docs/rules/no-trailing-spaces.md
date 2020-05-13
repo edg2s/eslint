@@ -1,7 +1,5 @@
 # disallow trailing whitespace at the end of lines (no-trailing-spaces)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes problems reported by this rule.
-
 Sometimes in the course of editing files, you can end up with extra whitespace at the end of lines. These whitespace differences can be picked up by source control systems and flagged as diffs, causing frustration for developers. While this extra whitespace causes no functional issues, many code conventions require that trailing spaces be removed before check-in.
 
 ## Rule Details
@@ -33,6 +31,8 @@ This rule has an object option:
 
 * `"skipBlankLines": false` (default) disallows trailing whitespace on empty lines
 * `"skipBlankLines": true` allows trailing whitespace on empty lines
+* `"ignoreComments": false` (default) disallows trailing whitespace in comment blocks
+* `"ignoreComments": true` allows trailing whitespace in comment blocks
 
 ### skipBlankLines
 
@@ -44,4 +44,20 @@ Examples of **correct** code for this rule with the `{ "skipBlankLines": true }`
 var foo = 0;
 var baz = 5;
 //•••••
+```
+
+### ignoreComments
+
+Examples of **correct** code for this rule with the `{ "ignoreComments": true }` option:
+
+```js
+/*eslint no-trailing-spaces: ["error", { "ignoreComments": true }]*/
+
+//foo•
+//•••••
+/**
+ *•baz
+ *••
+ *•bar
+ */
 ```

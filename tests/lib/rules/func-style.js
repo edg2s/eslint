@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/func-style"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 //------------------------------------------------------------------------------
 // Tests
@@ -74,12 +74,12 @@ ruleTester.run("func-style", rule, {
         },
         {
             code: "var foo = () => {};",
-            options: ["declaration", {allowArrowFunctions: true}],
+            options: ["declaration", { allowArrowFunctions: true }],
             parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "var foo = () => { function foo() { this; } };",
-            options: ["declaration", {allowArrowFunctions: true}],
+            options: ["declaration", { allowArrowFunctions: true }],
             parserOptions: { ecmaVersion: 6 }
         }
     ],
@@ -90,7 +90,7 @@ ruleTester.run("func-style", rule, {
             options: ["declaration"],
             errors: [
                 {
-                    message: "Expected a function declaration.",
+                    messageId: "declaration",
                     type: "VariableDeclarator"
                 }
             ]
@@ -101,7 +101,7 @@ ruleTester.run("func-style", rule, {
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Expected a function declaration.",
+                    messageId: "declaration",
                     type: "VariableDeclarator"
                 }
             ]
@@ -112,7 +112,7 @@ ruleTester.run("func-style", rule, {
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Expected a function declaration.",
+                    messageId: "declaration",
                     type: "VariableDeclarator"
                 }
             ]
@@ -122,7 +122,7 @@ ruleTester.run("func-style", rule, {
             options: ["expression"],
             errors: [
                 {
-                    message: "Expected a function expression.",
+                    messageId: "expression",
                     type: "FunctionDeclaration"
                 }
             ]

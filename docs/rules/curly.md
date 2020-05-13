@@ -1,7 +1,5 @@
 # Require Following Curly Brace Conventions (curly)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes problems reported by this rule.
-
 JavaScript allows the omission of curly braces when a block contains only one statement. However, it is considered by many to be best practice to _never_ omit curly braces around blocks, even when they are optional, because it can lead to bugs and reduces code clarity. So the following:
 
 ```js
@@ -212,6 +210,23 @@ while (true)
 
 for (var i = 0; foo; i++)
     doSomething();
+```
+
+For single-line statements preceded by a comment, braces are allowed but not required.
+
+Examples of additional **correct** code for the `"multi-or-nest"` option:
+
+```js
+/*eslint curly: ["error", "multi-or-nest"]*/
+
+if (foo)
+    // some comment
+    bar();
+
+if (foo) {
+    // some comment
+    bar();
+}
 ```
 
 ### consistent

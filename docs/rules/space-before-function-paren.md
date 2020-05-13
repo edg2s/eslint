@@ -1,7 +1,5 @@
 # Require or disallow a space before function parenthesis (space-before-function-paren)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes problems reported by this rule.
-
 When formatting a function, whitespace is allowed between the function name or `function` keyword and the opening paren. Named functions also require a space between the `function` keyword and the function name, but anonymous functions require no whitespace. For example:
 
 ```js
@@ -35,7 +33,7 @@ This rule has a string option or an object option:
     "space-before-function-paren": ["error", {
         "anonymous": "always",
         "named": "always",
-        "asyncArrow": "ignore"
+        "asyncArrow": "always"
     }],
 }
 ```
@@ -46,13 +44,11 @@ This rule has a string option or an object option:
 The string option does not check async arrow function expressions for backward compatibility.
 
 You can also use a separate option for each type of function.
-Each of the following options can be set to `"always"`, `"never"`, or `"ignore"`.
-Default is `"always"` basically.
+Each of the following options can be set to `"always"`, `"never"`, or `"ignore"`. The default is `"always"`.
 
 * `anonymous` is for anonymous function expressions (e.g. `function () {}`).
 * `named` is for named function expressions (e.g. `function foo () {}`).
 * `asyncArrow` is for async arrow function expressions (e.g. `async () => {}`).
-  `asyncArrow` is set to `"ignore"` by default for backwards compatibility.
 
 ### "always"
 
@@ -85,6 +81,8 @@ var foo = {
         // ...
     }
 };
+
+var foo = async() => 1
 ```
 
 Examples of **correct** code for this rule with the default `"always"` option:
@@ -117,9 +115,7 @@ var foo = {
     }
 };
 
-// async arrow function expressions are ignored by default.
 var foo = async () => 1
-var foo = async() => 1
 ```
 
 ### "never"
@@ -153,6 +149,8 @@ var foo = {
         // ...
     }
 };
+
+var foo = async () => 1
 ```
 
 Examples of **correct** code for this rule with the `"never"` option:
@@ -185,8 +183,6 @@ var foo = {
     }
 };
 
-// async arrow function expressions are ignored by default.
-var foo = async () => 1
 var foo = async() => 1
 ```
 

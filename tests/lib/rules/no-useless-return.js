@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/no-useless-return"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 
 //------------------------------------------------------------------------------
@@ -108,23 +108,23 @@ ruleTester.run("no-useless-return", rule, {
                 for (var foo of bar) return;
               }
             `,
-            parserOptions: {ecmaVersion: 6}
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "() => { if (foo) return; bar(); }",
-            parserOptions: {ecmaVersion: 6}
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "() => 5",
-            parserOptions: {ecmaVersion: 6}
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "() => { return; doSomething(); }",
-            parserOptions: {ecmaVersion: 6}
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "if (foo) { return; } doSomething();",
-            parserOptions: {ecmaFeatures: {globalReturn: true}}
+            parserOptions: { ecmaFeatures: { globalReturn: true } }
         },
 
         // https://github.com/eslint/eslint/issues/7477
@@ -148,6 +148,34 @@ ruleTester.run("no-useless-return", rule, {
             else return;
             return 5;
           }
+        `,
+
+        // https://github.com/eslint/eslint/issues/7583
+        `
+          function foo() {
+            return;
+            while (foo) return;
+            foo;
+          }
+        `,
+
+        // https://github.com/eslint/eslint/issues/7855
+        `
+          try {
+            throw new Error('foo');
+            while (false);
+          } catch (err) {}
+        `,
+
+        // https://github.com/eslint/eslint/issues/11647
+        `
+          function foo(arg) {
+            throw new Error("Debugging...");
+            if (!arg) {
+              return;
+            }
+            console.log(arg);
+          }
         `
     ],
 
@@ -169,14 +197,22 @@ ruleTester.run("no-useless-return", rule, {
             output: "function foo() { if (foo) return; }"
         },
         {
+            code: "function foo() { bar(); return/**/; }",
+            output: null
+        },
+        {
+            code: "function foo() { bar(); return//\n; }",
+            output: null
+        },
+        {
             code: "foo(); return;",
             output: "foo(); ",
-            parserOptions: {ecmaFeatures: {globalReturn: true}}
+            parserOptions: { ecmaFeatures: { globalReturn: true } }
         },
         {
             code: "if (foo) { bar(); return; } else { baz(); }",
             output: "if (foo) { bar();  } else { baz(); }",
-            parserOptions: {ecmaFeatures: {globalReturn: true}}
+            parserOptions: { ecmaFeatures: { globalReturn: true } }
         },
         {
             code: `
@@ -192,12 +228,12 @@ ruleTester.run("no-useless-return", rule, {
                 if (foo) {
                   
                 }
-                
+                return;
               }
-            `,
+            `, // Other case is fixed in the second pass.
             errors: [
-                {message: "Unnecessary return statement.", type: "ReturnStatement"},
-                {message: "Unnecessary return statement.", type: "ReturnStatement"},
+                { messageId: "unnecessaryReturn", type: "ReturnStatement" },
+                { messageId: "unnecessaryReturn", type: "ReturnStatement" }
             ]
         },
         {
@@ -351,8 +387,10 @@ ruleTester.run("no-useless-return", rule, {
             `
         },
 
-        // FIXME: Re-add this case (removed due to https://github.com/eslint/eslint/issues/7481):
-        // https://github.com/eslint/eslint/blob/261d7287820253408ec87c344beccdba2fe829a4/tests/lib/rules/no-useless-return.js#L308-L329
+        /*
+         * FIXME: Re-add this case (removed due to https://github.com/eslint/eslint/issues/7481):
+         * https://github.com/eslint/eslint/blob/261d7287820253408ec87c344beccdba2fe829a4/tests/lib/rules/no-useless-return.js#L308-L329
+         */
 
         {
             code: `
@@ -395,15 +433,16 @@ ruleTester.run("no-useless-return", rule, {
         {
             code: "() => { return; }",
             output: "() => {  }",
-            parserOptions: {ecmaVersion: 6}
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "function foo() { return; return; }",
-            output: "function foo() {   }",
-            errors: [
-                {message: "Unnecessary return statement.", type: "ReturnStatement"},
-                {message: "Unnecessary return statement.", type: "ReturnStatement"},
-            ]
+            output: "function foo() {  return; }",
+            errors: [{
+                messageId: "unnecessaryReturn",
+                type: "ReturnStatement",
+                column: 18
+            }]
         }
-    ].map(invalidCase => Object.assign({errors: [{message: "Unnecessary return statement.", type: "ReturnStatement"}]}, invalidCase))
+    ].map(invalidCase => Object.assign({ errors: [{ messageId: "unnecessaryReturn", type: "ReturnStatement" }] }, invalidCase))
 });

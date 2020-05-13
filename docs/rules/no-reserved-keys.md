@@ -18,7 +18,7 @@ ECMAScript 5 loosened the restriction such that keywords and reserved words can 
 
 This rule is aimed at eliminating the use of ECMAScript 3 keywords and reserved words as object literal keys. As such, it warns whenever an object key would throw an error in an ECMAScript 3 environment.
 
-The following patterns are considered problems:
+Examples of **incorrect** code for this rule:
 
 ```js
 var superman = {
@@ -31,7 +31,7 @@ var values = {
 };
 ```
 
-The following patterns are not considered problems:
+Examples of **correct** code for this rule:
 
 ```js
 var superman = {
@@ -50,4 +50,4 @@ If your code is only going to be executed in an ECMAScript 5 or higher environme
 
 ## Further Reading
 
-* [Reserved words as property names](http://kangax.github.io/compat-table/es5/#Reserved_words_as_property_names)
+* [Reserved words as property names](https://kangax.github.io/compat-table/es5/#Reserved_words_as_property_names)

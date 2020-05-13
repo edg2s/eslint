@@ -1,7 +1,5 @@
 # Enforce spacing around the * in generator functions (generator-star-spacing)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes problems reported by this rule.
-
 Generators are a new type of function in ECMAScript 6 that can return multiple values over time.
 These special functions are indicated by placing an `*` after the `function` keyword.
 
@@ -58,8 +56,10 @@ The rule takes one option, an object, which has two keys `before` and `after` ha
 
 The default is `{"before": true, "after": false}`.
 
+An example configuration:
+
 ```json
-"generator-star-spacing": ["error", {"before": false, "after": true}]
+"generator-star-spacing": ["error", {"before": true, "after": false}]
 ```
 
 And the option has shorthand as a string keyword:
@@ -69,9 +69,32 @@ And the option has shorthand as a string keyword:
 * `{"before": true, "after": true}` → `"both"`
 * `{"before": false, "after": false}` → `"neither"`
 
+An example of shorthand configuration:
+
 ```json
 "generator-star-spacing": ["error", "after"]
 ```
+
+Additionally, this rule allows further configurability via overrides per function type.
+
+* `named` provides overrides for named functions
+* `anonymous` provides overrides for anonymous functions
+* `method` provides overrides for class methods or property function shorthand
+
+An example of a configuration with overrides:
+
+```json
+"generator-star-spacing": ["error", {
+    "before": false,
+    "after": true,
+    "anonymous": "neither",
+    "method": {"before": true, "after": true}
+}]
+```
+
+In the example configuration above, the top level "before" and "after" options define the default behavior of
+the rule, while the "anonymous" and "method" options override the default behavior.
+Overrides can be either an object with "before" and "after", or a shorthand string as above.
 
 ## Examples
 
@@ -133,6 +156,46 @@ function*generator() {}
 var anonymous = function*() {};
 
 var shorthand = { *generator() {} };
+```
+
+Examples of **incorrect** code for this rule with overrides present:
+
+```js
+/*eslint generator-star-spacing: ["error", {
+    "before": false,
+    "after": true,
+    "anonymous": "neither",
+    "method": {"before": true, "after": true}
+}]*/
+/*eslint-env es6*/
+
+function * generator() {}
+
+var anonymous = function* () {};
+
+var shorthand = { *generator() {} };
+
+class Class { static* method() {} }
+```
+
+Examples of **correct** code for this rule with overrides present:
+
+```js
+/*eslint generator-star-spacing: ["error", {
+    "before": false,
+    "after": true,
+    "anonymous": "neither",
+    "method": {"before": true, "after": true}
+}]*/
+/*eslint-env es6*/
+
+function* generator() {}
+
+var anonymous = function*() {};
+
+var shorthand = { * generator() {} };
+
+class Class { static * method() {} }
 ```
 
 ## When Not To Use It

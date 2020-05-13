@@ -4,16 +4,16 @@ Variables that are declared and not used anywhere in the code are most likely an
 
 ## Rule Details
 
-This rule is aimed at eliminating unused variables, functions, and parameters of functions.
+This rule is aimed at eliminating unused variables, functions, and function parameters.
 
-A variable is considered to be used if any of the following are true:
+A variable `foo` is considered to be used if any of the following are true:
 
-* It represents a function that is called (`doSomething()`)
-* It is read (`var y = x`)
-* It is passed into a function as an argument (`doSomething(x)`)
+* It is called (`foo()`) or constructed (`new foo()`)
+* It is read (`var bar = foo`)
+* It is passed into a function as an argument (`doSomething(foo)`)
 * It is read inside of a function that is passed to another function (`doSomething(function() { foo(); })`)
 
-A variable is *not* considered to be used if it is only ever assigned to (`var x = 5`) or declared.
+A variable is *not* considered to be used if it is only ever declared (`var foo = 5`) or assigned to (`foo = 7`).
 
 Examples of **incorrect** code for this rule:
 
@@ -44,6 +44,11 @@ function fact(n) {
     if (n < 2) return 1;
     return n * fact(n - 1);
 }
+
+// When a function definition destructures an array, unused entries from the array also cause warnings.
+function getY([x, y]) {
+    return y;
+}
 ```
 
 Examples of **correct** code for this rule:
@@ -68,6 +73,11 @@ myFunc = setTimeout(function() {
     // myFunc is considered used
     myFunc();
 }, 50);
+
+// Only the second argument from the descructured array is used.
+function getY([, y]) {
+    return y;
+}
 ```
 
 ### exported
@@ -80,6 +90,16 @@ Note that `/* exported */` has no effect for any of the following:
 * when `parserOptions.sourceType` is `module`
 * when `ecmaFeatures.globalReturn` is `true`
 
+The line comment `// exported variableName` will not work as `exported` is not line-specific.
+
+Examples of **correct** code for `/* exported variableName */` operation:
+
+```js
+/* exported global_var */
+
+var global_var = 42;
+```
+
 ## Options
 
 This rule takes one argument which can be a string or an object. The string settings are the same as those of the `vars` property (explained below).
@@ -89,7 +109,7 @@ By default this rule is enabled with `all` option for variables and `after-used`
 ```json
 {
     "rules": {
-        "no-unused-vars": ["error", { "vars": "all", "args": "after-used" }]
+        "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
     }
 }
 ```
@@ -130,7 +150,7 @@ console.log(secondVar);
 
 The `args` option has three settings:
 
-* `after-used` - only the last argument must be used. This allows you, for instance, to have two named parameters to a function and as long as you use the second argument, ESLint will not warn you about the first. This is the default setting.
+* `after-used` - unused positional arguments that occur before the last used argument will not be checked, but all named arguments and all positional arguments after the last used argument will be checked.
 * `all` - all named arguments must be used.
 * `none` - do not check arguments.
 
@@ -141,9 +161,10 @@ Examples of **incorrect** code for the default `{ "args": "after-used" }` option
 ```js
 /*eslint no-unused-vars: ["error", { "args": "after-used" }]*/
 
-// 1 error
+// 2 errors, for the parameters after the last used parameter (bar)
 // "baz" is defined but never used
-(function(foo, bar, baz) {
+// "qux" is defined but never used
+(function(foo, bar, baz, qux) {
     return bar;
 })();
 ```
@@ -153,8 +174,8 @@ Examples of **correct** code for the default `{ "args": "after-used" }` option:
 ```js
 /*eslint no-unused-vars: ["error", {"args": "after-used"}]*/
 
-(function(foo, bar, baz) {
-    return baz;
+(function(foo, bar, baz, qux) {
+    return qux;
 })();
 ```
 
@@ -183,6 +204,18 @@ Examples of **correct** code for the `{ "args": "none" }` option:
 (function(foo, bar, baz) {
     return bar;
 })();
+```
+
+### ignoreRestSiblings
+
+The `ignoreRestSiblings` option is a boolean (default: `false`). Using a [Rest Property](https://github.com/tc39/proposal-object-rest-spread) it is possible to "omit" properties from an object, but by default the sibling properties are marked as "unused". With this option enabled the rest property's siblings are ignored.
+
+Examples of **correct** code for the `{ "ignoreRestSiblings": true }` option:
+
+```js
+/*eslint no-unused-vars: ["error", { "ignoreRestSiblings": true }]*/
+// 'type' is ignored because it has a rest property sibling.
+var { type, ...coords } = data;
 ```
 
 ### argsIgnorePattern

@@ -9,194 +9,359 @@
 //------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/arrow-body-style"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 //------------------------------------------------------------------------------
 // Tests
 //------------------------------------------------------------------------------
 
-const ruleTester = new RuleTester();
+const ruleTester = new RuleTester({ parserOptions: { ecmaVersion: 6 } });
 
 ruleTester.run("arrow-body-style", rule, {
     valid: [
-        { code: "var foo = () => {};", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = () => 0;", parserOptions: { ecmaVersion: 6 } },
-        { code: "var addToB = (a) => { b =  b + a };", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = () => { /* do nothing */ };", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = () => {\n /* do nothing */ \n};", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = (retv, name) => {\nretv[name] = true;\nreturn retv;\n};", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = () => ({});", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = () => bar();", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = () => { bar(); };", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = () => { b = a };", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = () => { bar: 1 };", parserOptions: { ecmaVersion: 6 } },
-        { code: "var foo = () => { return 0; };", parserOptions: { ecmaVersion: 6 }, options: ["always"] },
-        { code: "var foo = () => { return bar(); };", parserOptions: { ecmaVersion: 6 }, options: ["always"] },
-        { code: "var foo = () => 0;", parserOptions: { ecmaVersion: 6 }, options: ["never"] },
-        { code: "var foo = () => ({ foo: 0 });", parserOptions: { ecmaVersion: 6 }, options: ["never"] },
-        { code: "var foo = () => {};", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] },
-        { code: "var foo = () => 0;", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] },
-        { code: "var addToB = (a) => { b =  b + a };", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] },
-        { code: "var foo = () => { /* do nothing */ };", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] },
-        { code: "var foo = () => {\n /* do nothing */ \n};", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] },
-        { code: "var foo = (retv, name) => {\nretv[name] = true;\nreturn retv;\n};", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] },
-        { code: "var foo = () => bar();", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] },
-        { code: "var foo = () => { bar(); };", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] },
-        { code: "var addToB = (a) => { b =  b + a };", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] },
-        { code: "var foo = () => { return { bar: 0 }; };", parserOptions: { ecmaVersion: 6 }, options: ["as-needed", {requireReturnForObjectLiteral: true }] }
+        "var foo = () => {};",
+        "var foo = () => 0;",
+        "var addToB = (a) => { b =  b + a };",
+        "var foo = () => { /* do nothing */ };",
+        "var foo = () => {\n /* do nothing */ \n};",
+        "var foo = (retv, name) => {\nretv[name] = true;\nreturn retv;\n};",
+        "var foo = () => ({});",
+        "var foo = () => bar();",
+        "var foo = () => { bar(); };",
+        "var foo = () => { b = a };",
+        "var foo = () => { bar: 1 };",
+        { code: "var foo = () => { return 0; };", options: ["always"] },
+        { code: "var foo = () => { return bar(); };", options: ["always"] },
+        { code: "var foo = () => 0;", options: ["never"] },
+        { code: "var foo = () => ({ foo: 0 });", options: ["never"] },
+        { code: "var foo = () => {};", options: ["as-needed", { requireReturnForObjectLiteral: true }] },
+        { code: "var foo = () => 0;", options: ["as-needed", { requireReturnForObjectLiteral: true }] },
+        { code: "var addToB = (a) => { b =  b + a };", options: ["as-needed", { requireReturnForObjectLiteral: true }] },
+        { code: "var foo = () => { /* do nothing */ };", options: ["as-needed", { requireReturnForObjectLiteral: true }] },
+        { code: "var foo = () => {\n /* do nothing */ \n};", options: ["as-needed", { requireReturnForObjectLiteral: true }] },
+        { code: "var foo = (retv, name) => {\nretv[name] = true;\nreturn retv;\n};", options: ["as-needed", { requireReturnForObjectLiteral: true }] },
+        { code: "var foo = () => bar();", options: ["as-needed", { requireReturnForObjectLiteral: true }] },
+        { code: "var foo = () => { bar(); };", options: ["as-needed", { requireReturnForObjectLiteral: true }] },
+        { code: "var foo = () => { return { bar: 0 }; };", options: ["as-needed", { requireReturnForObjectLiteral: true }] }
     ],
     invalid: [
         {
-            code: "var foo = () => 0;",
-            output: "var foo = () => {return 0};",
-            parserOptions: { ecmaVersion: 6 },
+            code: "var foo = () => 0",
+            output: "var foo = () => {return 0}",
             options: ["always"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Expected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
+            ]
+        },
+        {
+            code: "var foo = () => 0;",
+            output: "var foo = () => {return 0};",
+            options: ["always"],
+            errors: [
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
             ]
         },
         {
             code: "var foo = () => ({});",
-            output: "var foo = () => {return ({})};",
-            parserOptions: { ecmaVersion: 6 },
+            output: "var foo = () => {return {}};",
             options: ["always"],
             errors: [
-                { line: 1, column: 18, type: "ArrowFunctionExpression", message: "Expected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 18,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
+            ]
+        },
+        {
+            code: "var foo = () => (  {});",
+            output: "var foo = () => {return   {}};",
+            options: ["always"],
+            errors: [
+                {
+                    line: 1,
+                    column: 20,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
+            ]
+        },
+        {
+            code: "(() => ({}))",
+            output: "(() => {return {}})",
+            options: ["always"],
+            errors: [
+                {
+                    line: 1,
+                    column: 9,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
+            ]
+        },
+        {
+            code: "(() => ( {}))",
+            output: "(() => {return  {}})",
+            options: ["always"],
+            errors: [
+                {
+                    line: 1,
+                    column: 10,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
             ]
         },
         {
             code: "var foo = () => { return 0; };",
             output: "var foo = () => 0;",
-            parserOptions: { ecmaVersion: 6 },
             options: ["as-needed"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = () => { return 0 };",
             output: "var foo = () => 0;",
-            parserOptions: { ecmaVersion: 6 },
             options: ["as-needed"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = () => { return bar(); };",
             output: "var foo = () => bar();",
-            parserOptions: { ecmaVersion: 6 },
             options: ["as-needed"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
+            ]
+        },
+        {
+            code: "var foo = () => {};",
+            output: null,
+            options: ["never"],
+            errors: [
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedEmptyBlock"
+                }
             ]
         },
         {
             code: "var foo = () => {\nreturn 0;\n};",
-            output: "var foo = () => \n 0\n;",
-            parserOptions: { ecmaVersion: 6 },
+            output: "var foo = () => 0;",
             options: ["never"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = () => { return { bar: 0 }; };",
             output: "var foo = () => ({ bar: 0 });",
-            parserOptions: { ecmaVersion: 6 },
             options: ["as-needed"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedObjectBlock"
+                }
+            ]
+        },
+        {
+            code: "var foo = () => { return ({ bar: 0 }); };",
+            output: "var foo = () => ({ bar: 0 });",
+            options: ["as-needed"],
+            errors: [
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
+            ]
+        },
+        {
+            code: "var foo = () => { return a, b }",
+            output: "var foo = () => (a, b)",
+            errors: [
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
+            ]
+        },
+        {
+            code: "var foo = () => { return };",
+            output: null, // not fixed
+            options: ["as-needed", { requireReturnForObjectLiteral: true }],
+            errors: [
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = () => { return; };",
-            output: "var foo = () => { return; };", // not fixed
-            parserOptions: { ecmaVersion: 6 },
-            options: ["as-needed", {requireReturnForObjectLiteral: true}],
+            output: null, // not fixed
+            options: ["as-needed", { requireReturnForObjectLiteral: true }],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = () => { return ( /* a */ {ok: true} /* b */ ) };",
             output: "var foo = () => ( /* a */ {ok: true} /* b */ );",
-            parserOptions: { ecmaVersion: 6 },
             options: ["as-needed"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = () => { return '{' };",
             output: "var foo = () => '{';",
-            parserOptions: { ecmaVersion: 6 },
             options: ["as-needed"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = () => { return { bar: 0 }.bar; };",
             output: "var foo = () => ({ bar: 0 }.bar);",
-            parserOptions: { ecmaVersion: 6 },
             options: ["as-needed"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedObjectBlock"
+                }
             ]
         },
         {
             code: "var foo = (retv, name) => {\nretv[name] = true;\nreturn retv;\n};",
-            output: "var foo = (retv, name) => {\nretv[name] = true;\nreturn retv;\n};", // not fixed
-            parserOptions: { ecmaVersion: 6 },
+            output: null, // not fixed
             options: ["never"],
             errors: [
-                { line: 1, column: 27, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                { line: 1, column: 27, type: "ArrowFunctionExpression", messageId: "unexpectedOtherBlock" }
             ]
         },
         {
             code: "var foo = () => { return 0; };",
             output: "var foo = () => 0;",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["as-needed", {requireReturnForObjectLiteral: true }],
+            options: ["as-needed", { requireReturnForObjectLiteral: true }],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = () => { return bar(); };",
             output: "var foo = () => bar();",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["as-needed", {requireReturnForObjectLiteral: true }],
+            options: ["as-needed", { requireReturnForObjectLiteral: true }],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = () => ({});",
-            output: "var foo = () => {return ({})};",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["as-needed", {requireReturnForObjectLiteral: true }],
+            output: "var foo = () => {return {}};",
+            options: ["as-needed", { requireReturnForObjectLiteral: true }],
             errors: [
-                { line: 1, column: 18, type: "ArrowFunctionExpression", message: "Expected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 18,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
             ]
         },
         {
             code: "var foo = () => ({ bar: 0 });",
-            output: "var foo = () => {return ({ bar: 0 })};",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["as-needed", {requireReturnForObjectLiteral: true }],
+            output: "var foo = () => {return { bar: 0 }};",
+            options: ["as-needed", { requireReturnForObjectLiteral: true }],
             errors: [
-                { line: 1, column: 18, type: "ArrowFunctionExpression", message: "Expected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 18,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
             ]
         },
         {
             code: "var foo = () => (((((((5)))))));",
             output: "var foo = () => {return (((((((5)))))))};",
-            parserOptions: { ecmaVersion: 6 },
             options: ["always"],
             errors: [
-                { line: 1, column: 24, type: "ArrowFunctionExpression", message: "Expected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 24,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
             ]
         },
         {
@@ -205,13 +370,10 @@ ruleTester.run("arrow-body-style", rule, {
             code:
             "var foo = () => { return bar }\n" +
             "[1, 2, 3].map(foo)",
-            output:
-            "var foo = () => { return bar }\n" +
-            "[1, 2, 3].map(foo)",
-            parserOptions: { ecmaVersion: 6 },
+            output: null,
             options: ["never"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                { line: 1, column: 17, type: "ArrowFunctionExpression", messageId: "unexpectedSingleBlock" }
             ]
         },
         {
@@ -220,13 +382,10 @@ ruleTester.run("arrow-body-style", rule, {
             code:
             "var foo = () => { return bar }\n" +
             "(1).toString();",
-            output:
-            "var foo = () => { return bar }\n" +
-            "(1).toString();",
-            parserOptions: { ecmaVersion: 6 },
+            output: null,
             options: ["never"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                { line: 1, column: 17, type: "ArrowFunctionExpression", messageId: "unexpectedSingleBlock" }
             ]
         },
         {
@@ -238,29 +397,175 @@ ruleTester.run("arrow-body-style", rule, {
             output:
             "var foo = () => bar;\n" +
             "[1, 2, 3].map(foo)",
-            parserOptions: { ecmaVersion: 6 },
             options: ["never"],
             errors: [
-                { line: 1, column: 17, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = /* a */ ( /* b */ ) /* c */ => /* d */ { /* e */ return /* f */ 5 /* g */ ; /* h */ } /* i */ ;",
             output: "var foo = /* a */ ( /* b */ ) /* c */ => /* d */  /* e */  /* f */ 5 /* g */  /* h */  /* i */ ;",
-            parserOptions: { ecmaVersion: 6 },
             options: ["as-needed"],
             errors: [
-                { line: 1, column: 50, type: "ArrowFunctionExpression", message: "Unexpected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 50,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
             ]
         },
         {
             code: "var foo = /* a */ ( /* b */ ) /* c */ => /* d */ ( /* e */ 5 /* f */ ) /* g */ ;",
             output: "var foo = /* a */ ( /* b */ ) /* c */ => /* d */ {return ( /* e */ 5 /* f */ )} /* g */ ;",
-            parserOptions: { ecmaVersion: 6 },
             options: ["always"],
             errors: [
-                { line: 1, column: 60, type: "ArrowFunctionExpression", message: "Expected block statement surrounding arrow body." }
+                {
+                    line: 1,
+                    column: 60,
+                    type: "ArrowFunctionExpression",
+                    messageId: "expectedBlock"
+                }
             ]
+        },
+        {
+            code: "var foo = () => {\nreturn bar;\n};",
+            output: "var foo = () => bar;",
+            errors: [
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
+            ]
+        },
+        {
+            code: "var foo = () => {\nreturn bar;};",
+            output: "var foo = () => bar;",
+            errors: [
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
+            ]
+        },
+        {
+            code: "var foo = () => {return bar;\n};",
+            output: "var foo = () => bar;",
+            errors: [
+                {
+                    line: 1,
+                    column: 17,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
+            ]
+        },
+        {
+            code: `
+              var foo = () => {
+                return foo
+                  .bar;
+              };
+            `,
+            output: `
+              var foo = () => foo
+                  .bar;
+            `,
+            errors: [
+                {
+                    line: 2,
+                    column: 31,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedSingleBlock"
+                }
+            ]
+        },
+        {
+            code: `
+              var foo = () => {
+                return {
+                  bar: 1,
+                  baz: 2
+                };
+              };
+            `,
+            output: `
+              var foo = () => ({
+                  bar: 1,
+                  baz: 2
+                });
+            `,
+            errors: [
+                {
+                    line: 2,
+                    column: 31,
+                    type: "ArrowFunctionExpression",
+                    messageId: "unexpectedObjectBlock"
+                }
+            ]
+        },
+        {
+            code: "var foo = () => ({foo: 1}).foo();",
+            output: "var foo = () => {return {foo: 1}.foo()};",
+            options: ["always"],
+            errors: [{ messageId: "expectedBlock" }]
+        },
+        {
+            code: "var foo = () => ({foo: 1}.foo());",
+            output: "var foo = () => {return {foo: 1}.foo()};",
+            options: ["always"],
+            errors: [{ messageId: "expectedBlock" }]
+        },
+        {
+            code: "var foo = () => ( {foo: 1} ).foo();",
+            output: "var foo = () => {return  {foo: 1} .foo()};",
+            options: ["always"],
+            errors: [{ messageId: "expectedBlock" }]
+        },
+        {
+            code: `
+              var foo = () => ({
+                  bar: 1,
+                  baz: 2
+                });
+            `,
+            output: `
+              var foo = () => {return {
+                  bar: 1,
+                  baz: 2
+                }};
+            `,
+            options: ["always"],
+            errors: [{ messageId: "expectedBlock" }]
+        },
+        {
+            code: `
+              parsedYears = _map(years, (year) => (
+                  {
+                      index : year,
+                      title : splitYear(year)
+                  }
+              ));
+            `,
+            output: `
+              parsedYears = _map(years, (year) => {
+                  return {
+                      index : year,
+                      title : splitYear(year)
+                  }
+              });
+            `,
+            options: ["always"],
+            errors: [{ messageId: "expectedBlock" }]
         }
     ]
 });

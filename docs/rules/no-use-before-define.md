@@ -25,7 +25,6 @@ function g() {
 }
 var b = 1;
 
-// With blockBindings: true
 {
     alert(c);
     let c = 1;
@@ -50,9 +49,8 @@ function g() {
     return b;
 }
 
-// With blockBindings: true
 {
-    let C;
+    let c;
     c++;
 }
 ```
@@ -77,9 +75,14 @@ function g() {
   Otherwise, ignores those references if the declaration is in upper function scopes.
   Class declarations are not hoisted, so it might be danger.
   Default is `true`.
+* `variables` (`boolean`) -
+  This flag determines whether or not the rule checks variable declarations in upper scopes.
+  If this is `true`, the rule warns every reference to a variable before the variable declaration.
+  Otherwise, the rule ignores a reference if the declaration is in an upper scope, while still reporting the reference if it's in the same scope as the declaration.
+  Default is `true`.
 
-This rule accepts `"nofunc"` string as a option.
-`"nofunc"` is the same as `{ "functions": false, "classes": true }`.
+This rule accepts `"nofunc"` string as an option.
+`"nofunc"` is the same as `{ "functions": false, "classes": true, "variables": true }`.
 
 ### functions
 
@@ -91,6 +94,8 @@ Examples of **correct** code for the `{ "functions": false }` option:
 f();
 function f() {}
 ```
+
+This option allows references to function declarations. For function expressions and arrow functions, please see the [`variables`](#variables) option.
 
 ### classes
 
@@ -117,4 +122,40 @@ function foo() {
 
 class A {
 }
+```
+
+### variables
+
+Examples of **incorrect** code for the `{ "variables": false }` option:
+
+```js
+/*eslint no-use-before-define: ["error", { "variables": false }]*/
+
+console.log(foo);
+var foo = 1;
+
+f();
+const f = () => {};
+
+g();
+const g = function() {};
+```
+
+Examples of **correct** code for the `{ "variables": false }` option:
+
+```js
+/*eslint no-use-before-define: ["error", { "variables": false }]*/
+
+function baz() {
+    console.log(foo);
+}
+var foo = 1;
+
+const a = () => f();
+function b() { return f(); }
+const c = function() { return f(); }
+const f = () => {};
+
+const e = function() { return g(); }
+const g = function() {}
 ```

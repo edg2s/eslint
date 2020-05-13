@@ -1,7 +1,5 @@
 # Suggest using `const` (prefer-const)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes some instances of problems reported by this rule.
-
 If a variable is never reassigned, using the `const` declaration is better.
 
 `const` declaration tells readers, "this variable is never reassigned," reducing cognitive load and improving maintainability.
@@ -80,6 +78,15 @@ for (const a of [1, 2, 3]) {
 for (let i = 0, end = 10; i < end; ++i) {
     console.log(a);
 }
+
+// `predicate` is only assigned once but cannot be separately declared as `const`
+let predicate;
+[object.type, predicate] = foo();
+
+// `a` is only assigned once but cannot be separately declared as `const`
+let a;
+const b = {};
+({ a, c: b.c } = func());
 
 // suggest to use `no-var` rule.
 var b = 3;
@@ -174,7 +181,7 @@ function initialize() {
 timer = setInterval(initialize, 100);
 ```
 
-Examples of **correct** code for the defaut `{"ignoreReadBeforeAssign": false}` option:
+Examples of **correct** code for the default `{"ignoreReadBeforeAssign": false}` option:
 
 ```js
 /*eslint prefer-const: ["error", {"ignoreReadBeforeAssign": false}]*/

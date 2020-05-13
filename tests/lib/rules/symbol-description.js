@@ -10,59 +10,39 @@
 //------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/symbol-description");
-const RuleTester = require("../../../lib/testers/rule-tester");
+const { RuleTester } = require("../../../lib/rule-tester");
 
-const ruleTester = new RuleTester();
+const ruleTester = new RuleTester({ env: { es6: true } });
 
 ruleTester.run("symbol-description", rule, {
 
     valid: [
-        {
-            code: "Symbol(\"Foo\");",
-            env: {es6: true}
-        },
-        {
-            code: "var foo = \"foo\"; Symbol(foo);",
-            env: {es6: true}
-        },
+        "Symbol(\"Foo\");",
+        "var foo = \"foo\"; Symbol(foo);",
 
         // Ignore if it's shadowed.
-        {
-            code: "var Symbol = function () {}; Symbol();",
-            env: {es6: true}
-        },
-        {
-            code: "Symbol(); var Symbol = function () {};",
-            env: {es6: true}
-        },
-        {
-            code: "function bar() { var Symbol = function () {}; Symbol(); }",
-            env: {es6: true}
-        },
+        "var Symbol = function () {}; Symbol();",
+        "Symbol(); var Symbol = function () {};",
+        "function bar() { var Symbol = function () {}; Symbol(); }",
 
         // Ignore if it's an argument.
-        {
-            code: "function bar(Symbol) { Symbol(); }",
-            env: {es6: true}
-        },
+        "function bar(Symbol) { Symbol(); }"
     ],
 
     invalid: [
         {
             code: "Symbol();",
             errors: [{
-                message: "Expected Symbol to have a description.",
+                messageId: "expected",
                 type: "CallExpression"
-            }],
-            env: {es6: true}
+            }]
         },
         {
             code: "Symbol(); Symbol = function () {};",
             errors: [{
-                message: "Expected Symbol to have a description.",
+                messageId: "expected",
                 type: "CallExpression"
-            }],
-            env: {es6: true}
-        },
+            }]
+        }
     ]
 });

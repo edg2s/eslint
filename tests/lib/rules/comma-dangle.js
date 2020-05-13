@@ -11,7 +11,7 @@
 
 const path = require("path"),
     rule = require("../../../lib/rules/comma-dangle"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 //------------------------------------------------------------------------------
 // Helpers
@@ -19,8 +19,7 @@ const path = require("path"),
 
 /**
  * Gets the path to the parser of the given name.
- *
- * @param {string} name - The name of a parser to get.
+ * @param {string} name The name of a parser to get.
  * @returns {string} The path to the specified parser.
  */
 function parser(name) {
@@ -57,358 +56,436 @@ ruleTester.run("comma-dangle", rule, {
         { code: "var { a,\n b, \n} = foo;", options: ["only-multiline"], parserOptions: { ecmaVersion: 6 } },
         { code: "var [ a,\n b, \n] = foo;", options: ["only-multiline"], parserOptions: { ecmaVersion: 6 } },
 
-        { code: "[(1),]", options: [ "always" ] },
-        { code: "var x = { foo: (1),};", options: [ "always" ] },
-        { code: "var foo = { bar: 'baz', }", options: [ "always" ] },
-        { code: "var foo = {\nbar: 'baz',\n}", options: [ "always" ] },
-        { code: "var foo = {\nbar: 'baz'\n,}", options: [ "always" ] },
-        { code: "var foo = [ 'baz', ]", options: [ "always" ] },
-        { code: "var foo = [\n'baz',\n]", options: [ "always" ] },
-        { code: "var foo = [\n'baz'\n,]", options: [ "always" ] },
-        { code: "[,,]", options: [ "always" ] },
-        { code: "[\n,\n,\n]", options: [ "always" ] },
-        { code: "[,]", options: [ "always" ] },
-        { code: "[\n,\n]", options: [ "always" ] },
-        { code: "[]", options: [ "always" ] },
-        { code: "[\n]", options: [ "always" ] },
+        { code: "[(1),]", options: ["always"] },
+        { code: "var x = { foo: (1),};", options: ["always"] },
+        { code: "var foo = { bar: 'baz', }", options: ["always"] },
+        { code: "var foo = {\nbar: 'baz',\n}", options: ["always"] },
+        { code: "var foo = {\nbar: 'baz'\n,}", options: ["always"] },
+        { code: "var foo = [ 'baz', ]", options: ["always"] },
+        { code: "var foo = [\n'baz',\n]", options: ["always"] },
+        { code: "var foo = [\n'baz'\n,]", options: ["always"] },
+        { code: "[,,]", options: ["always"] },
+        { code: "[\n,\n,\n]", options: ["always"] },
+        { code: "[,]", options: ["always"] },
+        { code: "[\n,\n]", options: ["always"] },
+        { code: "[]", options: ["always"] },
+        { code: "[\n]", options: ["always"] },
 
-        { code: "var foo = { bar: 'baz' }", options: [ "always-multiline" ] },
-        { code: "var foo = { bar: 'baz' }", options: [ "only-multiline" ] },
-        { code: "var foo = {\nbar: 'baz',\n}", options: [ "always-multiline" ] },
-        { code: "var foo = {\nbar: 'baz',\n}", options: [ "only-multiline" ] },
-        { code: "var foo = [ 'baz' ]", options: [ "always-multiline" ] },
-        { code: "var foo = [ 'baz' ]", options: [ "only-multiline" ] },
-        { code: "var foo = [\n'baz',\n]", options: [ "always-multiline" ] },
-        { code: "var foo = [\n'baz',\n]", options: [ "only-multiline" ] },
-        { code: "var foo = { bar:\n\n'bar' }", options: [ "always-multiline" ] },
-        { code: "var foo = { bar:\n\n'bar' }", options: [ "only-multiline" ] },
-        { code: "var foo = {a: 1, b: 2, c: 3, d: 4}", options: [ "always-multiline" ]},
-        { code: "var foo = {a: 1, b: 2, c: 3, d: 4}", options: [ "only-multiline" ]},
-        { code: "var foo = {a: 1, b: 2,\n c: 3, d: 4}", options: [ "always-multiline" ]},
-        { code: "var foo = {a: 1, b: 2,\n c: 3, d: 4}", options: [ "only-multiline" ]},
-        { code: "var foo = {x: {\nfoo: 'bar',\n}}", options: [ "always-multiline" ]},
-        { code: "var foo = {x: {\nfoo: 'bar',\n}}", options: [ "only-multiline" ]},
-        { code: "var foo = new Map([\n[key, {\na: 1,\nb: 2,\nc: 3,\n}],\n])", options: [ "always-multiline" ]},
-        { code: "var foo = new Map([\n[key, {\na: 1,\nb: 2,\nc: 3,\n}],\n])", options: [ "only-multiline" ]},
-        { code: "[,,]", options: [ "always" ] },
-        { code: "[\n,\n,\n]", options: [ "always" ] },
-        { code: "[,]", options: [ "always" ] },
-        { code: "[\n,\n]", options: [ "always" ] },
-        { code: "[]", options: [ "always" ] },
-        { code: "[\n]", options: [ "always" ] },
+        { code: "var foo = { bar: 'baz' }", options: ["always-multiline"] },
+        { code: "var foo = { bar: 'baz' }", options: ["only-multiline"] },
+        { code: "var foo = {\nbar: 'baz',\n}", options: ["always-multiline"] },
+        { code: "var foo = {\nbar: 'baz',\n}", options: ["only-multiline"] },
+        { code: "var foo = [ 'baz' ]", options: ["always-multiline"] },
+        { code: "var foo = [ 'baz' ]", options: ["only-multiline"] },
+        { code: "var foo = [\n'baz',\n]", options: ["always-multiline"] },
+        { code: "var foo = [\n'baz',\n]", options: ["only-multiline"] },
+        { code: "var foo = { bar:\n\n'bar' }", options: ["always-multiline"] },
+        { code: "var foo = { bar:\n\n'bar' }", options: ["only-multiline"] },
+        { code: "var foo = {a: 1, b: 2, c: 3, d: 4}", options: ["always-multiline"] },
+        { code: "var foo = {a: 1, b: 2, c: 3, d: 4}", options: ["only-multiline"] },
+        { code: "var foo = {a: 1, b: 2,\n c: 3, d: 4}", options: ["always-multiline"] },
+        { code: "var foo = {a: 1, b: 2,\n c: 3, d: 4}", options: ["only-multiline"] },
+        { code: "var foo = {x: {\nfoo: 'bar',\n}}", options: ["always-multiline"] },
+        { code: "var foo = {x: {\nfoo: 'bar',\n}}", options: ["only-multiline"] },
+        { code: "var foo = new Map([\n[key, {\na: 1,\nb: 2,\nc: 3,\n}],\n])", options: ["always-multiline"] },
+        { code: "var foo = new Map([\n[key, {\na: 1,\nb: 2,\nc: 3,\n}],\n])", options: ["only-multiline"] },
 
         // https://github.com/eslint/eslint/issues/3627
         {
             code: "var [a, ...rest] = [];",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "var [\n    a,\n    ...rest\n] = [];",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "var [\n    a,\n    ...rest\n] = [];",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["always-multiline"]
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "var [\n    a,\n    ...rest\n] = [];",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["only-multiline"]
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "[a, ...rest] = [];",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "for ([a, ...rest] of []);",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6 }
         },
         {
             code: "var a = [b, ...spread,];",
-            parserOptions: { ecmaVersion: 6 },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6 }
         },
 
         // https://github.com/eslint/eslint/issues/7297
         {
             code: "var {foo, ...bar} = baz",
-            parserOptions: { ecmaVersion: 8, ecmaFeatures: { experimentalObjectRestSpread: true } },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 2018 }
         },
 
         // https://github.com/eslint/eslint/issues/3794
         {
             code: "import {foo,} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import foo from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import foo, {abc,} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import * as foo from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "export {foo,} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always"]
+            options: ["always"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["never"]
+            options: ["never"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import foo from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["never"]
+            options: ["never"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import foo, {abc} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["never"]
+            options: ["never"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import * as foo from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["never"]
+            options: ["never"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "export {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["never"]
+            options: ["never"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always-multiline"]
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["only-multiline"]
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "export {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always-multiline"]
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "export {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["only-multiline"]
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import {\n  foo,\n} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always-multiline"]
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import {\n  foo,\n} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["only-multiline"]
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "export {\n  foo,\n} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always-multiline"]
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "export {\n  foo,\n} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["only-multiline"]
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import {foo} from \n'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["always-multiline"]
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "import {foo} from \n'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["only-multiline"]
-        },
-
-
-        // trailing comma in functions -- ignore by default
-        {
-            code: "function foo(a,) {}",
-            parserOptions: {ecmaVersion: 8},
-            options: ["never"],
-        },
-        {
-            code: "foo(a,)",
-            parserOptions: {ecmaVersion: 8},
-            options: ["never"],
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 6, sourceType: "module" }
         },
         {
             code: "function foo(a) {}",
-            parserOptions: {ecmaVersion: 8},
-            options: ["always"],
+            options: ["always"]
         },
         {
             code: "foo(a)",
-            parserOptions: {ecmaVersion: 8},
-            options: ["always"],
+            options: ["always"]
         },
         {
-            code: "function foo(\na,\nb\n) {}",
-            parserOptions: {ecmaVersion: 8},
+            code: "function foo(a) {}",
+            options: ["never"]
+        },
+        {
+            code: "foo(a)",
+            options: ["never"]
+        },
+        {
+            code: "function foo(a,\nb) {}",
+            options: ["always-multiline"]
+        },
+        {
+            code: "foo(a,\nb)",
+            options: ["always-multiline"]
+        },
+        {
+            code: "function foo(a,\nb) {}",
+            options: ["only-multiline"]
+        },
+        {
+            code: "foo(a,\nb)",
+            options: ["only-multiline"]
+        },
+        {
+            code: "function foo(a) {}",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 7 }
+        },
+        {
+            code: "foo(a)",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 7 }
+        },
+        {
+            code: "function foo(a) {}",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 7 }
+        },
+        {
+            code: "foo(a)",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 7 }
+        },
+        {
+            code: "function foo(a,\nb) {}",
             options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 7 }
+        },
+        {
+            code: "foo(a,\nb)",
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 7 }
+        },
+        {
+            code: "function foo(a,\nb) {}",
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 7 }
+        },
+        {
+            code: "foo(a,\nb)",
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 7 }
+        },
+        {
+            code: "function foo(a) {}",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 }
+        },
+        {
+            code: "foo(a)",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 }
+        },
+        {
+            code: "function foo(a,) {}",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 }
+        },
+        {
+            code: "foo(a,)",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 }
+        },
+        {
+            code: "function foo(\na,\nb,\n) {}",
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "foo(\na,b)",
-            parserOptions: {ecmaVersion: 8},
             options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
-            code: "function foo(a,b,) {}",
-            parserOptions: {ecmaVersion: 8},
+            code: "function foo(a,b) {}",
             options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
-            code: "foo(a,b,)",
-            parserOptions: {ecmaVersion: 8},
+            code: "foo(a,b)",
             options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
-            code: "function foo(a,b,) {}",
-            parserOptions: {ecmaVersion: 8},
+            code: "function foo(a,b) {}",
             options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
-            code: "foo(a,b,)",
-            parserOptions: {ecmaVersion: 8},
+            code: "foo(a,b)",
             options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 8 }
         },
 
         // trailing comma in functions
         {
             code: "function foo(a) {} ",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "never"}],
+            options: [{}],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "foo(a)",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "never"}],
+            options: [{}],
+            parserOptions: { ecmaVersion: 8 }
+        },
+        {
+            code: "function foo(a) {} ",
+            options: [{ functions: "never" }],
+            parserOptions: { ecmaVersion: 8 }
+        },
+        {
+            code: "foo(a)",
+            options: [{ functions: "never" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "function foo(a,) {}",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always"}],
+            options: [{ functions: "always" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "function bar(a, ...b) {}",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always"}],
+            options: [{ functions: "always" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "foo(a,)",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always"}],
+            options: [{ functions: "always" }],
+            parserOptions: { ecmaVersion: 8 }
+        },
+        {
+            code: "foo(a,)",
+            options: [{ functions: "always" }],
+            parserOptions: { ecmaVersion: 9 }
         },
         {
             code: "bar(...a,)",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always"}],
+            options: [{ functions: "always" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "function foo(a) {} ",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always-multiline"}],
+            options: [{ functions: "always-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "foo(a)",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always-multiline"}],
+            options: [{ functions: "always-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "function foo(\na,\nb,\n) {} ",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always-multiline"}],
+            options: [{ functions: "always-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "function foo(\na,\n...b\n) {} ",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always-multiline"}],
+            options: [{ functions: "always-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "foo(\na,\nb,\n)",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always-multiline"}],
+            options: [{ functions: "always-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "foo(\na,\n...b,\n)",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "always-multiline"}],
+            options: [{ functions: "always-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "function foo(a) {} ",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "only-multiline"}],
+            options: [{ functions: "only-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "foo(a)",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "only-multiline"}],
+            options: [{ functions: "only-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "function foo(\na,\nb,\n) {} ",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "only-multiline"}],
+            options: [{ functions: "only-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "foo(\na,\nb,\n)",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "only-multiline"}],
+            options: [{ functions: "only-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "function foo(\na,\nb\n) {} ",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "only-multiline"}],
+            options: [{ functions: "only-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
         {
             code: "foo(\na,\nb\n)",
-            parserOptions: {ecmaVersion: 8},
-            options: [{functions: "only-multiline"}],
+            options: [{ functions: "only-multiline" }],
+            parserOptions: { ecmaVersion: 8 }
         },
 
         // https://github.com/eslint/eslint/issues/7370
         {
             code: "function foo({a}: {a: string,}) {}",
-            parser: parser("object-pattern-1"),
             options: ["never"],
+            parser: parser("object-pattern-1")
         },
         {
             code: "function foo({a,}: {a: string}) {}",
-            parser: parser("object-pattern-2"),
             options: ["always"],
+            parser: parser("object-pattern-2")
         },
         {
             code: "function foo(a): {b: boolean,} {}",
-            parser: parser("return-type-1"),
-            options: [{functions: "never"}],
+            options: [{ functions: "never" }],
+            parser: parser("return-type-1")
         },
         {
             code: "function foo(a,): {b: boolean} {}",
-            parser: parser("return-type-2"),
-            options: [{functions: "always"}],
-        },
+            options: [{ functions: "always" }],
+            parser: parser("return-type-2")
+        }
     ],
     invalid: [
         {
@@ -416,10 +493,11 @@ ruleTester.run("comma-dangle", rule, {
             output: "var foo = { bar: 'baz' }",
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
-                    column: 23
+                    column: 23,
+                    endColumn: 24
                 }
             ]
         },
@@ -428,10 +506,11 @@ ruleTester.run("comma-dangle", rule, {
             output: "var foo = {\nbar: 'baz'\n}",
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 2,
-                    column: 11
+                    column: 11,
+                    endColumn: 12
                 }
             ]
         },
@@ -440,7 +519,7 @@ ruleTester.run("comma-dangle", rule, {
             output: "foo({ bar: 'baz', qux: 'quux' });",
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 30
@@ -452,7 +531,7 @@ ruleTester.run("comma-dangle", rule, {
             output: "foo({\nbar: 'baz',\nqux: 'quux'\n});",
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 3,
                     column: 12
@@ -464,7 +543,7 @@ ruleTester.run("comma-dangle", rule, {
             output: "var foo = [ 'baz' ]",
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Literal",
                     line: 1,
                     column: 18
@@ -476,7 +555,7 @@ ruleTester.run("comma-dangle", rule, {
             output: "var foo = [ 'baz'\n]",
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Literal",
                     line: 1,
                     column: 18
@@ -488,7 +567,7 @@ ruleTester.run("comma-dangle", rule, {
             output: "var foo = { bar: 'bar'\n\n }",
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 3,
                     column: 1
@@ -500,10 +579,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = { bar: 'baz', }",
             output: "var foo = { bar: 'baz' }",
-            options: [ "never" ],
+            options: ["never"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 23
@@ -513,10 +592,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = { bar: 'baz', }",
             output: "var foo = { bar: 'baz' }",
-            options: [ "only-multiline" ],
+            options: ["only-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 23
@@ -526,10 +605,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = {\nbar: 'baz',\n}",
             output: "var foo = {\nbar: 'baz'\n}",
-            options: [ "never" ],
+            options: ["never"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 2,
                     column: 11
@@ -539,10 +618,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "foo({ bar: 'baz', qux: 'quux', });",
             output: "foo({ bar: 'baz', qux: 'quux' });",
-            options: [ "never" ],
+            options: ["never"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 30
@@ -552,10 +631,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "foo({ bar: 'baz', qux: 'quux', });",
             output: "foo({ bar: 'baz', qux: 'quux' });",
-            options: [ "only-multiline" ],
+            options: ["only-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 30
@@ -566,62 +645,71 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = { bar: 'baz' }",
             output: "var foo = { bar: 'baz', }",
-            options: [ "always" ],
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Property",
                     line: 1,
-                    column: 23
+                    column: 23,
+                    endLine: 1,
+                    endColumn: 24
                 }
             ]
         },
         {
             code: "var foo = {\nbar: 'baz'\n}",
             output: "var foo = {\nbar: 'baz',\n}",
-            options: [ "always" ],
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Property",
                     line: 2,
-                    column: 11
+                    column: 11,
+                    endLine: 3,
+                    endColumn: 1
                 }
             ]
         },
         {
             code: "foo({ bar: 'baz', qux: 'quux' });",
             output: "foo({ bar: 'baz', qux: 'quux', });",
-            options: [ "always" ],
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Property",
                     line: 1,
-                    column: 30
+                    column: 30,
+                    endLine: 1,
+                    endColumn: 31
+
                 }
             ]
         },
         {
             code: "foo({\nbar: 'baz',\nqux: 'quux'\n});",
             output: "foo({\nbar: 'baz',\nqux: 'quux',\n});",
-            options: [ "always" ],
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Property",
                     line: 3,
-                    column: 12
+                    column: 12,
+                    endLine: 4,
+                    endColumn: 1
                 }
             ]
         },
         {
             code: "var foo = [ 'baz' ]",
             output: "var foo = [ 'baz', ]",
-            options: [ "always" ],
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Literal",
                     line: 1,
                     column: 18
@@ -629,12 +717,26 @@ ruleTester.run("comma-dangle", rule, {
             ]
         },
         {
-            code: "var foo = [ 'baz'\n]",
-            output: "var foo = [ 'baz',\n]",
-            options: [ "always" ],
+            code: "var foo = ['baz']",
+            output: "var foo = ['baz',]",
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
+                    type: "Literal",
+                    line: 1,
+                    column: 17,
+                    endColumn: 18
+                }
+            ]
+        },
+        {
+            code: "var foo = [ 'baz'\n]",
+            output: "var foo = [ 'baz',\n]",
+            options: ["always"],
+            errors: [
+                {
+                    messageId: "missing",
                     type: "Literal",
                     line: 1,
                     column: 18
@@ -644,10 +746,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = { bar:\n\n'bar' }",
             output: "var foo = { bar:\n\n'bar', }",
-            options: [ "always" ],
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Property",
                     line: 3,
                     column: 6
@@ -658,10 +760,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = {\nbar: 'baz'\n}",
             output: "var foo = {\nbar: 'baz',\n}",
-            options: [ "always-multiline" ],
+            options: ["always-multiline"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Property",
                     line: 2,
                     column: 11
@@ -683,10 +785,10 @@ ruleTester.run("comma-dangle", rule, {
             "    baz\n" +
             "  ),\n" +
             "];",
-            options: [ "always" ],
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Identifier",
                     line: 5,
                     column: 4
@@ -708,10 +810,10 @@ ruleTester.run("comma-dangle", rule, {
             "    qux\n" +
             "  ),\n" +
             "};",
-            options: [ "always" ],
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Property",
                     line: 5,
                     column: 4
@@ -735,10 +837,10 @@ ruleTester.run("comma-dangle", rule, {
             "    : qux\n" +
             "  ),\n" +
             "];",
-            options: [ "always" ],
+            options: ["always"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "ConditionalExpression",
                     line: 5,
                     column: 4
@@ -748,23 +850,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = { bar: 'baz', }",
             output: "var foo = { bar: 'baz' }",
-            options: [ "always-multiline" ],
+            options: ["always-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
-                    type: "Property",
-                    line: 1,
-                    column: 23
-                }
-            ]
-        },
-        {
-            code: "var foo = { bar: 'baz', }",
-            ouput: "var foo = { bar: 'baz' }",
-            options: [ "only-multiline" ],
-            errors: [
-                {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 23
@@ -774,10 +863,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "foo({\nbar: 'baz',\nqux: 'quux'\n});",
             output: "foo({\nbar: 'baz',\nqux: 'quux',\n});",
-            options: [ "always-multiline" ],
+            options: ["always-multiline"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Property",
                     line: 3,
                     column: 12
@@ -787,23 +876,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "foo({ bar: 'baz', qux: 'quux', });",
             output: "foo({ bar: 'baz', qux: 'quux' });",
-            options: [ "always-multiline" ],
+            options: ["always-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
-                    type: "Property",
-                    line: 1,
-                    column: 30
-                }
-            ]
-        },
-        {
-            code: "foo({ bar: 'baz', qux: 'quux', });",
-            ouput: "foo({ bar: 'baz', qux: 'quux' });",
-            options: [ "only-multiline" ],
-            errors: [
-                {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 30
@@ -813,10 +889,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = [\n'baz'\n]",
             output: "var foo = [\n'baz',\n]",
-            options: [ "always-multiline" ],
+            options: ["always-multiline"],
             errors: [
                 {
-                    message: "Missing trailing comma.",
+                    messageId: "missing",
                     type: "Literal",
                     line: 2,
                     column: 6
@@ -826,10 +902,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = ['baz',]",
             output: "var foo = ['baz']",
-            options: [ "always-multiline" ],
+            options: ["always-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Literal",
                     line: 1,
                     column: 17
@@ -839,10 +915,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = ['baz',]",
             output: "var foo = ['baz']",
-            options: [ "only-multiline" ],
+            options: ["only-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Literal",
                     line: 1,
                     column: 17
@@ -852,10 +928,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = {x: {\nfoo: 'bar',\n},}",
             output: "var foo = {x: {\nfoo: 'bar',\n}}",
-            options: [ "always-multiline" ],
+            options: ["always-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 3,
                     column: 2
@@ -865,10 +941,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = {a: 1, b: 2,\nc: 3, d: 4,}",
             output: "var foo = {a: 1, b: 2,\nc: 3, d: 4}",
-            options: [ "always-multiline" ],
+            options: ["always-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 2,
                     column: 11
@@ -878,10 +954,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = {a: 1, b: 2,\nc: 3, d: 4,}",
             output: "var foo = {a: 1, b: 2,\nc: 3, d: 4}",
-            options: [ "only-multiline" ],
+            options: ["only-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 2,
                     column: 11
@@ -891,10 +967,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var foo = [{\na: 1,\nb: 2,\nc: 3,\nd: 4,\n},]",
             output: "var foo = [{\na: 1,\nb: 2,\nc: 3,\nd: 4,\n}]",
-            options: [ "always-multiline" ],
+            options: ["always-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "ObjectExpression",
                     line: 6,
                     column: 2
@@ -904,11 +980,11 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var { a, b, } = foo;",
             output: "var { a, b } = foo;",
-            options: [ "never" ],
+            options: ["never"],
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 11
@@ -918,11 +994,11 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var { a, b, } = foo;",
             output: "var { a, b } = foo;",
-            options: [ "only-multiline" ],
+            options: ["only-multiline"],
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 11
@@ -932,11 +1008,11 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var [ a, b, ] = foo;",
             output: "var [ a, b ] = foo;",
-            options: [ "never" ],
+            options: ["never"],
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Identifier",
                     line: 1,
                     column: 11
@@ -946,11 +1022,11 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var [ a, b, ] = foo;",
             output: "var [ a, b ] = foo;",
-            options: [ "only-multiline" ],
+            options: ["only-multiline"],
             parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Identifier",
                     line: 1,
                     column: 11
@@ -960,10 +1036,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "[(1),]",
             output: "[(1)]",
-            options: [ "never" ],
+            options: ["never"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Literal",
                     line: 1,
                     column: 5
@@ -973,10 +1049,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "[(1),]",
             output: "[(1)]",
-            options: [ "only-multiline" ],
+            options: ["only-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Literal",
                     line: 1,
                     column: 5
@@ -986,10 +1062,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var x = { foo: (1),};",
             output: "var x = { foo: (1)};",
-            options: [ "never" ],
+            options: ["never"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 19
@@ -999,10 +1075,10 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "var x = { foo: (1),};",
             output: "var x = { foo: (1)};",
-            options: [ "only-multiline" ],
+            options: ["only-multiline"],
             errors: [
                 {
-                    message: "Unexpected trailing comma.",
+                    messageId: "unexpected",
                     type: "Property",
                     line: 1,
                     column: 19
@@ -1014,107 +1090,93 @@ ruleTester.run("comma-dangle", rule, {
         {
             code: "import {foo} from 'foo';",
             output: "import {foo,} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["always"],
-            errors: [{message: "Missing trailing comma.", type: "ImportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "missing", type: "ImportSpecifier" }]
         },
         {
             code: "import foo, {abc} from 'foo';",
             output: "import foo, {abc,} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["always"],
-            errors: [{message: "Missing trailing comma.", type: "ImportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "missing", type: "ImportSpecifier" }]
         },
         {
             code: "export {foo} from 'foo';",
             output: "export {foo,} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["always"],
-            errors: [{message: "Missing trailing comma.", type: "ExportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "missing", type: "ExportSpecifier" }]
         },
         {
             code: "import {foo,} from 'foo';",
             output: "import {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["never"],
-            errors: [{message: "Unexpected trailing comma.", type: "ImportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "unexpected", type: "ImportSpecifier" }]
         },
         {
             code: "import {foo,} from 'foo';",
             output: "import {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["only-multiline"],
-            errors: [{message: "Unexpected trailing comma.", type: "ImportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "unexpected", type: "ImportSpecifier" }]
         },
         {
             code: "import foo, {abc,} from 'foo';",
             output: "import foo, {abc} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["never"],
-            errors: [{message: "Unexpected trailing comma.", type: "ImportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "unexpected", type: "ImportSpecifier" }]
         },
         {
             code: "import foo, {abc,} from 'foo';",
             output: "import foo, {abc} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["only-multiline"],
-            errors: [{message: "Unexpected trailing comma.", type: "ImportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "unexpected", type: "ImportSpecifier" }]
         },
         {
             code: "export {foo,} from 'foo';",
             output: "export {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["never"],
-            errors: [{message: "Unexpected trailing comma.", type: "ExportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "unexpected", type: "ExportSpecifier" }]
         },
         {
             code: "export {foo,} from 'foo';",
             output: "export {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["only-multiline"],
-            errors: [{message: "Unexpected trailing comma.", type: "ExportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "unexpected", type: "ExportSpecifier" }]
         },
         {
             code: "import {foo,} from 'foo';",
             output: "import {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["always-multiline"],
-            errors: [{message: "Unexpected trailing comma.", type: "ImportSpecifier"}]
-        },
-        {
-            code: "import {foo,} from 'foo';",
-            output: "import {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["only-multiline"],
-            errors: [{message: "Unexpected trailing comma.", type: "ImportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "unexpected", type: "ImportSpecifier" }]
         },
         {
             code: "export {foo,} from 'foo';",
             output: "export {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["always-multiline"],
-            errors: [{message: "Unexpected trailing comma.", type: "ExportSpecifier"}]
-        },
-        {
-            code: "export {foo,} from 'foo';",
-            output: "export {foo} from 'foo';",
-            parserOptions: { sourceType: "module" },
-            options: ["only-multiline"],
-            errors: [{message: "Unexpected trailing comma.", type: "ExportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "unexpected", type: "ExportSpecifier" }]
         },
         {
             code: "import {\n  foo\n} from 'foo';",
             output: "import {\n  foo,\n} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["always-multiline"],
-            errors: [{message: "Missing trailing comma.", type: "ImportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "missing", type: "ImportSpecifier" }]
         },
         {
             code: "export {\n  foo\n} from 'foo';",
             output: "export {\n  foo,\n} from 'foo';",
-            parserOptions: { sourceType: "module" },
             options: ["always-multiline"],
-            errors: [{message: "Missing trailing comma.", type: "ExportSpecifier"}]
+            parserOptions: { ecmaVersion: 6, sourceType: "module" },
+            errors: [{ messageId: "missing", type: "ExportSpecifier" }]
         },
 
         // https://github.com/eslint/eslint/issues/6233
@@ -1122,213 +1184,415 @@ ruleTester.run("comma-dangle", rule, {
             code: "var foo = {a: (1)}",
             output: "var foo = {a: (1),}",
             options: ["always"],
-            errors: [{message: "Missing trailing comma.", type: "Property"}]
+            errors: [{ messageId: "missing", type: "Property" }]
         },
         {
             code: "var foo = [(1)]",
             output: "var foo = [(1),]",
             options: ["always"],
-            errors: [{message: "Missing trailing comma.", type: "Literal"}]
+            errors: [{ messageId: "missing", type: "Literal" }]
         },
         {
             code: "var foo = [\n1,\n(2)\n]",
             output: "var foo = [\n1,\n(2),\n]",
             options: ["always-multiline"],
-            errors: [{message: "Missing trailing comma.", type: "Literal"}]
+            errors: [{ messageId: "missing", type: "Literal" }]
         },
 
         // trailing commas in functions
         {
             code: "function foo(a,) {}",
             output: "function foo(a) {}",
+            options: [{ functions: "never" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "never"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "(function foo(a,) {})",
             output: "(function foo(a) {})",
+            options: [{ functions: "never" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "never"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "(a,) => a",
             output: "(a) => a",
+            options: [{ functions: "never" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "never"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "(a,) => (a)",
             output: "(a) => (a)",
+            options: [{ functions: "never" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "never"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "({foo(a,) {}})",
             output: "({foo(a) {}})",
+            options: [{ functions: "never" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "never"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "class A {foo(a,) {}}",
             output: "class A {foo(a) {}}",
+            options: [{ functions: "never" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "never"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "foo(a,)",
             output: "foo(a)",
+            options: [{ functions: "never" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "never"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "foo(...a,)",
             output: "foo(...a)",
+            options: [{ functions: "never" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "never"}],
-            errors: [{message: "Unexpected trailing comma.", type: "SpreadElement"}]
+            errors: [{ messageId: "unexpected", type: "SpreadElement" }]
         },
 
         {
             code: "function foo(a) {}",
             output: "function foo(a,) {}",
+            options: [{ functions: "always" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always"}],
-            errors: [{message: "Missing trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
         {
             code: "(function foo(a) {})",
             output: "(function foo(a,) {})",
+            options: [{ functions: "always" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always"}],
-            errors: [{message: "Missing trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
         {
             code: "(a) => a",
             output: "(a,) => a",
+            options: [{ functions: "always" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always"}],
-            errors: [{message: "Missing trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
         {
             code: "(a) => (a)",
             output: "(a,) => (a)",
+            options: [{ functions: "always" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always"}],
-            errors: [{message: "Missing trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
         {
             code: "({foo(a) {}})",
             output: "({foo(a,) {}})",
+            options: [{ functions: "always" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always"}],
-            errors: [{message: "Missing trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
         {
             code: "class A {foo(a) {}}",
             output: "class A {foo(a,) {}}",
+            options: [{ functions: "always" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always"}],
-            errors: [{message: "Missing trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
         {
             code: "foo(a)",
             output: "foo(a,)",
+            options: [{ functions: "always" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always"}],
-            errors: [{message: "Missing trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
         {
             code: "foo(...a)",
             output: "foo(...a,)",
+            options: [{ functions: "always" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always"}],
-            errors: [{message: "Missing trailing comma.", type: "SpreadElement"}]
+            errors: [{ messageId: "missing", type: "SpreadElement" }]
         },
 
         {
             code: "function foo(a,) {}",
             output: "function foo(a) {}",
+            options: [{ functions: "always-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always-multiline"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "(function foo(a,) {})",
             output: "(function foo(a) {})",
+            options: [{ functions: "always-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always-multiline"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "foo(a,)",
             output: "foo(a)",
+            options: [{ functions: "always-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always-multiline"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "foo(...a,)",
             output: "foo(...a)",
+            options: [{ functions: "always-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always-multiline"}],
-            errors: [{message: "Unexpected trailing comma.", type: "SpreadElement"}]
+            errors: [{ messageId: "unexpected", type: "SpreadElement" }]
         },
         {
             code: "function foo(\na,\nb\n) {}",
             output: "function foo(\na,\nb,\n) {}",
+            options: [{ functions: "always-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always-multiline"}],
-            errors: [{message: "Missing trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
         {
             code: "foo(\na,\nb\n)",
             output: "foo(\na,\nb,\n)",
+            options: [{ functions: "always-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always-multiline"}],
-            errors: [{message: "Missing trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
         {
             code: "foo(\n...a,\n...b\n)",
             output: "foo(\n...a,\n...b,\n)",
+            options: [{ functions: "always-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "always-multiline"}],
-            errors: [{message: "Missing trailing comma.", type: "SpreadElement"}]
+            errors: [{ messageId: "missing", type: "SpreadElement" }]
         },
 
         {
             code: "function foo(a,) {}",
             output: "function foo(a) {}",
+            options: [{ functions: "only-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "only-multiline"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "(function foo(a,) {})",
             output: "(function foo(a) {})",
+            options: [{ functions: "only-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "only-multiline"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "foo(a,)",
             output: "foo(a)",
+            options: [{ functions: "only-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "only-multiline"}],
-            errors: [{message: "Unexpected trailing comma.", type: "Identifier"}]
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
         },
         {
             code: "foo(...a,)",
             output: "foo(...a)",
+            options: [{ functions: "only-multiline" }],
             parserOptions: { ecmaVersion: 8 },
-            options: [{functions: "only-multiline"}],
-            errors: [{message: "Unexpected trailing comma.", type: "SpreadElement"}]
+            errors: [{ messageId: "unexpected", type: "SpreadElement" }]
+        },
+        {
+            code: "function foo(a,) {}",
+            output: "function foo(a) {}",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "(function foo(a,) {})",
+            output: "(function foo(a) {})",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "(a,) => a",
+            output: "(a) => a",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "(a,) => (a)",
+            output: "(a) => (a)",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "({foo(a,) {}})",
+            output: "({foo(a) {}})",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "class A {foo(a,) {}}",
+            output: "class A {foo(a) {}}",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "foo(a,)",
+            output: "foo(a)",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "foo(...a,)",
+            output: "foo(...a)",
+            options: ["never"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "SpreadElement" }]
+        },
+
+        {
+            code: "function foo(a) {}",
+            output: "function foo(a,) {}",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "Identifier" }]
+        },
+        {
+            code: "(function foo(a) {})",
+            output: "(function foo(a,) {})",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "Identifier" }]
+        },
+        {
+            code: "(a) => a",
+            output: "(a,) => a",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "Identifier" }]
+        },
+        {
+            code: "(a) => (a)",
+            output: "(a,) => (a)",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "Identifier" }]
+        },
+        {
+            code: "({foo(a) {}})",
+            output: "({foo(a,) {},})",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [
+                { messageId: "missing", type: "Identifier" },
+                { messageId: "missing", type: "Property" }
+            ]
+        },
+        {
+            code: "class A {foo(a) {}}",
+            output: "class A {foo(a,) {}}",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "Identifier" }]
+        },
+        {
+            code: "foo(a)",
+            output: "foo(a,)",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "Identifier" }]
+        },
+        {
+            code: "foo(...a)",
+            output: "foo(...a,)",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "SpreadElement" }]
+        },
+
+        {
+            code: "function foo(a,) {}",
+            output: "function foo(a) {}",
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "(function foo(a,) {})",
+            output: "(function foo(a) {})",
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "foo(a,)",
+            output: "foo(a)",
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "foo(...a,)",
+            output: "foo(...a)",
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "SpreadElement" }]
+        },
+        {
+            code: "function foo(\na,\nb\n) {}",
+            output: "function foo(\na,\nb,\n) {}",
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "Identifier" }]
+        },
+        {
+            code: "foo(\na,\nb\n)",
+            output: "foo(\na,\nb,\n)",
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "Identifier" }]
+        },
+        {
+            code: "foo(\n...a,\n...b\n)",
+            output: "foo(\n...a,\n...b,\n)",
+            options: ["always-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "missing", type: "SpreadElement" }]
+        },
+
+        {
+            code: "function foo(a,) {}",
+            output: "function foo(a) {}",
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "(function foo(a,) {})",
+            output: "(function foo(a) {})",
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "foo(a,)",
+            output: "foo(a)",
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "Identifier" }]
+        },
+        {
+            code: "foo(...a,)",
+            output: "foo(...a)",
+            options: ["only-multiline"],
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected", type: "SpreadElement" }]
+        },
+        {
+            code: "function foo(a) {}",
+            output: "function foo(a,) {}",
+            options: ["always"],
+            parserOptions: { ecmaVersion: 9 },
+            errors: [{ messageId: "missing", type: "Identifier" }]
         },
 
         // separated options
@@ -1336,14 +1600,13 @@ ruleTester.run("comma-dangle", rule, {
             code: `let {a,} = {a: 1,};
 let [b,] = [1,];
 import {c,} from "foo";
-export {d,};
+let d = 0;export {d,};
 (function foo(e,) {})(f,);`,
             output: `let {a} = {a: 1};
 let [b,] = [1,];
 import {c,} from "foo";
-export {d,};
+let d = 0;export {d,};
 (function foo(e,) {})(f,);`,
-            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             options: [{
                 objects: "never",
                 arrays: "ignore",
@@ -1351,23 +1614,23 @@ export {d,};
                 exports: "ignore",
                 functions: "ignore"
             }],
+            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             errors: [
-                {message: "Unexpected trailing comma.", line: 1},
-                {message: "Unexpected trailing comma.", line: 1}
+                { messageId: "unexpected", line: 1 },
+                { messageId: "unexpected", line: 1 }
             ]
         },
         {
             code: `let {a,} = {a: 1,};
 let [b,] = [1,];
 import {c,} from "foo";
-export {d,};
+let d = 0;export {d,};
 (function foo(e,) {})(f,);`,
             output: `let {a,} = {a: 1,};
 let [b] = [1];
 import {c,} from "foo";
-export {d,};
+let d = 0;export {d,};
 (function foo(e,) {})(f,);`,
-            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             options: [{
                 objects: "ignore",
                 arrays: "never",
@@ -1375,23 +1638,23 @@ export {d,};
                 exports: "ignore",
                 functions: "ignore"
             }],
+            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             errors: [
-                {message: "Unexpected trailing comma.", line: 2},
-                {message: "Unexpected trailing comma.", line: 2}
+                { messageId: "unexpected", line: 2 },
+                { messageId: "unexpected", line: 2 }
             ]
         },
         {
             code: `let {a,} = {a: 1,};
 let [b,] = [1,];
 import {c,} from "foo";
-export {d,};
+let d = 0;export {d,};
 (function foo(e,) {})(f,);`,
             output: `let {a,} = {a: 1,};
 let [b,] = [1,];
 import {c} from "foo";
-export {d,};
+let d = 0;export {d,};
 (function foo(e,) {})(f,);`,
-            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             options: [{
                 objects: "ignore",
                 arrays: "ignore",
@@ -1399,22 +1662,22 @@ export {d,};
                 exports: "ignore",
                 functions: "ignore"
             }],
+            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             errors: [
-                {message: "Unexpected trailing comma.", line: 3}
+                { messageId: "unexpected", line: 3 }
             ]
         },
         {
             code: `let {a,} = {a: 1,};
 let [b,] = [1,];
 import {c,} from "foo";
-export {d,};
+let d = 0;export {d,};
 (function foo(e,) {})(f,);`,
             output: `let {a,} = {a: 1,};
 let [b,] = [1,];
 import {c,} from "foo";
-export {d};
+let d = 0;export {d};
 (function foo(e,) {})(f,);`,
-            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             options: [{
                 objects: "ignore",
                 arrays: "ignore",
@@ -1422,22 +1685,22 @@ export {d};
                 exports: "never",
                 functions: "ignore"
             }],
+            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             errors: [
-                {message: "Unexpected trailing comma.", line: 4}
+                { messageId: "unexpected", line: 4 }
             ]
         },
         {
             code: `let {a,} = {a: 1,};
 let [b,] = [1,];
 import {c,} from "foo";
-export {d,};
+let d = 0;export {d,};
 (function foo(e,) {})(f,);`,
             output: `let {a,} = {a: 1,};
 let [b,] = [1,];
 import {c,} from "foo";
-export {d,};
+let d = 0;export {d,};
 (function foo(e) {})(f);`,
-            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             options: [{
                 objects: "ignore",
                 arrays: "ignore",
@@ -1445,9 +1708,10 @@ export {d,};
                 exports: "ignore",
                 functions: "never"
             }],
+            parserOptions: { ecmaVersion: 8, sourceType: "module" },
             errors: [
-                {message: "Unexpected trailing comma.", line: 5},
-                {message: "Unexpected trailing comma.", line: 5}
+                { messageId: "unexpected", line: 5 },
+                { messageId: "unexpected", line: 5 }
             ]
         },
 
@@ -1455,30 +1719,38 @@ export {d,};
         {
             code: "function foo({a}: {a: string,}) {}",
             output: "function foo({a,}: {a: string,}) {}",
-            parser: parser("object-pattern-1"),
             options: ["always"],
-            errors: [{message: "Missing trailing comma."}],
+            parser: parser("object-pattern-1"),
+            errors: [{ messageId: "missing" }]
         },
         {
             code: "function foo({a,}: {a: string}) {}",
             output: "function foo({a}: {a: string}) {}",
-            parser: parser("object-pattern-2"),
             options: ["never"],
-            errors: [{message: "Unexpected trailing comma."}],
+            parser: parser("object-pattern-2"),
+            errors: [{ messageId: "unexpected" }]
         },
         {
             code: "function foo(a): {b: boolean,} {}",
             output: "function foo(a,): {b: boolean,} {}",
+            options: [{ functions: "always" }],
             parser: parser("return-type-1"),
-            options: [{functions: "always"}],
-            errors: [{message: "Missing trailing comma."}],
+            errors: [{ messageId: "missing" }]
         },
         {
             code: "function foo(a,): {b: boolean} {}",
             output: "function foo(a): {b: boolean} {}",
+            options: [{ functions: "never" }],
             parser: parser("return-type-2"),
-            options: [{functions: "never"}],
-            errors: [{message: "Unexpected trailing comma."}],
+            errors: [{ messageId: "unexpected" }]
         },
+
+        // https://github.com/eslint/eslint/issues/11502
+        {
+            code: "foo(a,)",
+            output: "foo(a)",
+            parserOptions: { ecmaVersion: 8 },
+            errors: [{ messageId: "unexpected" }]
+        }
     ]
 });

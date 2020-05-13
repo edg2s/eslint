@@ -1,7 +1,5 @@
 # require spacing around infix operators (space-infix-ops)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes problems reported by this rule.
-
 While formatting preferences are very personal, a number of style guides require spaces around operators, such as:
 
 ```js
@@ -25,7 +23,7 @@ This rule is aimed at ensuring there are spaces around infix operators.
 This rule accepts a single options argument with the following defaults:
 
 ```json
-"space-infix-ops": ["error", {"int32Hint": false}]
+"space-infix-ops": ["error", { "int32Hint": false }]
 ```
 
 ### `int32Hint`
@@ -36,7 +34,7 @@ Set the `int32Hint` option to `true` (default is `false`) to allow write `a|0` w
 var foo = bar|0; // `foo` is forced to be signed 32 bit integer
 ```
 
-The following patterns are considered problems:
+Examples of **incorrect** code for this rule:
 
 ```js
 /*eslint space-infix-ops: "error"*/
@@ -57,7 +55,7 @@ var {a=0}=bar;
 function foo(a=0) { }
 ```
 
-The following patterns are not considered problems:
+Examples of **correct** code for this rule:
 
 ```js
 /*eslint space-infix-ops: "error"*/
@@ -75,3 +73,7 @@ var {a = 0} = bar;
 
 function foo(a = 0) { }
 ```
+
+## When Not To Use It
+
+You can turn this rule off if you are not concerned with the consistency of spacing around infix operators.

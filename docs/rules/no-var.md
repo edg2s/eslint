@@ -1,7 +1,5 @@
 # require `let` or `const` instead of `var` (no-var)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixed problems reported by this rule.
-
 ECMAScript 6 allows programmers to create variables with block scope instead of function scope using the `let`
 and `const` keywords. Block scope is common in many other programming languages and helps programmers avoid mistakes
 such as:
@@ -11,7 +9,7 @@ var count = people.length;
 var enoughFood = count > sandwiches.length;
 
 if (enoughFood) {
-    var count = sandwiches.length; // accidently overriding the count variable
+    var count = sandwiches.length; // accidentally overriding the count variable
     console.log("We have " + count + " sandwiches for everyone. Plenty for all!");
 }
 

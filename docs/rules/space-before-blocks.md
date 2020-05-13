@@ -1,7 +1,5 @@
 # Require Or Disallow Space Before Blocks (space-before-blocks)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes problems reported by this rule.
-
 Consistency is an important part of any style guide.
 While it is a personal preference where to put the opening brace of blocks,
 it should be consistent across a whole project.
@@ -19,7 +17,7 @@ This rule will enforce consistency of spacing before blocks. It is only applied 
 This rule takes one argument. If it is `"always"` then blocks must always have at least one preceding space. If `"never"`
 then all blocks should never have any preceding space. If different spacing is desired for function
 blocks, keyword blocks and classes, an optional configuration object can be passed as the rule argument to
-configure the cases separately.
+configure the cases separately. If any value in the configuration object is `"off"`, then neither style will be enforced for blocks of that kind.
 
 ( e.g. `{ "functions": "never", "keywords": "always", "classes": "always" }` )
 
@@ -49,7 +47,7 @@ class Foo{
 }
 ```
 
-Examples of **correct** code for this rule with the "always" option:
+Examples of **correct** code for this rule with the `"always"` option:
 
 ```js
 /*eslint space-before-blocks: "error"*/
@@ -76,7 +74,7 @@ try {} catch(a) {}
 
 ### "never"
 
-Examples of **incorrect** code for this rule with the "never" option:
+Examples of **incorrect** code for this rule with the `"never"` option:
 
 ```js
 /*eslint space-before-blocks: ["error", "never"]*/
@@ -94,7 +92,7 @@ for (;;) {
 try {} catch(a) {}
 ```
 
-Examples of **correct** code for this rule with the "never" option:
+Examples of **correct** code for this rule with the `"never"` option:
 
 ```js
 /*eslint space-before-blocks: ["error", "never"]*/
@@ -145,7 +143,7 @@ describe(function(){
   // ...
 });
 
-class Foo {
+class Foo{
   constructor(){}
 }
 ```
@@ -206,7 +204,7 @@ class Foo {
 
 ## When Not To Use It
 
-You can turn this rule off if you are not concerned with the consistency of spacing before blocks or if you are using the `space-after-keywords` rule set to `"never"`.
+You can turn this rule off if you are not concerned with the consistency of spacing before blocks.
 
 ## Related Rules
 

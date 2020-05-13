@@ -1,7 +1,5 @@
 # Require or disallow the Unicode Byte Order Mark (BOM) (unicode-bom)
 
-(fixable) The `--fix` option on the [command line](../user-guide/command-line-interface#fix) automatically fixes problems reported by this rule.
-
 The Unicode Byte Order Mark (BOM) is used to specify whether code units are big
 endian or little endian. That is, whether the most significant or least
 significant bytes come first. UTF-8 does not require a BOM because byte ordering
@@ -26,7 +24,7 @@ This rule has a string option:
 Example of **correct** code for this rule with the `"always"` option:
 
 ```js
-/*eslint unicode-bom: "error"*/
+/*eslint unicode-bom: ["error", "always"]*/
 
 U+FEFF
 var abc;
@@ -35,7 +33,7 @@ var abc;
 Example of **incorrect** code for this rule with the `"always"` option:
 
 ```js
-/*eslint unicode-bom: "error"*/
+/*eslint unicode-bom: ["error", "always"]*/
 
 var abc;
 ```

@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/no-irregular-whitespace"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 //------------------------------------------------------------------------------
 // Tests
@@ -19,11 +19,11 @@ const rule = require("../../../lib/rules/no-irregular-whitespace"),
 const ruleTester = new RuleTester();
 
 const expectedErrors = [{
-    message: "Irregular whitespace not allowed.",
+    messageId: "noIrregularWhitespace",
     type: "Program"
 }];
 const expectedCommentErrors = [{
-    message: "Irregular whitespace not allowed.",
+    messageId: "noIrregularWhitespace",
     type: "Program",
     line: 1,
     column: 4
@@ -142,27 +142,27 @@ ruleTester.run("no-irregular-whitespace", rule, {
         { code: "/\u202F/", options: [{ skipRegExps: true }] },
         { code: "/\u205f/", options: [{ skipRegExps: true }] },
         { code: "/\u3000/", options: [{ skipRegExps: true }] },
-        { code: "`\u000B`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u000C`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u0085`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u00A0`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u180E`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\ufeff`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2000`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2001`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2002`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2003`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2004`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2005`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2006`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2007`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2008`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u2009`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u200A`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u200B`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u202F`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u205f`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
-        { code: "`\u3000`", options: [{ skipTemplates: true }], parserOptions: {ecmaVersion: 6} },
+        { code: "`\u000B`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u000C`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u0085`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u00A0`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u180E`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\ufeff`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2000`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2001`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2002`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2003`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2004`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2005`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2006`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2007`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2008`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u2009`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u200A`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u200B`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u202F`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u205f`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
+        { code: "`\u3000`", options: [{ skipTemplates: true }], parserOptions: { ecmaVersion: 6 } },
 
         // Unicode BOM.
         "\uFEFFconsole.log('hello BOM');"
@@ -181,10 +181,15 @@ ruleTester.run("no-irregular-whitespace", rule, {
             code: "var any \u00A0 = 'thing';",
             errors: expectedErrors
         },
-        {
-            code: "var any \u180E = 'thing';",
-            errors: expectedErrors
-        },
+
+        /*
+         * it was moved out of General_Category=Zs (separator, space) in Unicode 6.3.0, so should not be considered a whitespace character.
+         * https://codeblog.jonskeet.uk/2014/12/01/when-is-an-identifier-not-an-identifier-attack-of-the-mongolian-vowel-separator/
+         * {
+         *     code: "var any \u180E = 'thing';",
+         *     errors: expectedErrors
+         * },
+         */
         {
             code: "var any \ufeff = 'thing';",
             errors: expectedErrors
@@ -257,13 +262,13 @@ ruleTester.run("no-irregular-whitespace", rule, {
             code: "var a = 'b',\u2028c = 'd',\ne = 'f'\u2028",
             errors: [
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 13
                 },
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 3,
                     column: 8
@@ -274,19 +279,19 @@ ruleTester.run("no-irregular-whitespace", rule, {
             code: "var any \u3000 = 'thing', other \u3000 = 'thing';\nvar third \u3000 = 'thing';",
             errors: [
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 9
                 },
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 28
                 },
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 2,
                     column: 11
@@ -473,13 +478,13 @@ ruleTester.run("no-irregular-whitespace", rule, {
             code: "var any = /\u3000/, other = /\u000B/;",
             errors: [
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 12
                 },
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 25
@@ -491,13 +496,13 @@ ruleTester.run("no-irregular-whitespace", rule, {
             options: [{ skipStrings: false }],
             errors: [
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 12
                 },
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 25
@@ -507,16 +512,16 @@ ruleTester.run("no-irregular-whitespace", rule, {
         {
             code: "var any = `\u3000`, other = `\u000B`;",
             options: [{ skipTemplates: false }],
-            parserOptions: {ecmaVersion: 6},
+            parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 12
                 },
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 25
@@ -526,10 +531,10 @@ ruleTester.run("no-irregular-whitespace", rule, {
         {
             code: "`something ${\u3000 10} another thing`",
             options: [{ skipTemplates: true }],
-            parserOptions: {ecmaVersion: 6},
+            parserOptions: { ecmaVersion: 6 },
             errors: [
                 {
-                    message: "Irregular whitespace not allowed.",
+                    messageId: "noIrregularWhitespace",
                     type: "Program",
                     line: 1,
                     column: 14

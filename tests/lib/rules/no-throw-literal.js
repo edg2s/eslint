@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/no-throw-literal"),
-    RuleTester = require("../../../lib/testers/rule-tester");
+    { RuleTester } = require("../../../lib/rule-tester");
 
 //------------------------------------------------------------------------------
 // Tests
@@ -37,41 +37,49 @@ ruleTester.run("no-throw-literal", rule, {
         "throw foo ? new Error() : 'literal';", // ConditionalExpression (consequent)
         "throw foo ? 'literal' : new Error();", // ConditionalExpression (alternate)
         { code: "throw tag `${foo}`;", parserOptions: { ecmaVersion: 6 } }, // TaggedTemplateExpression
-        { code: "function* foo() { var index = 0; throw yield index++; }", parserOptions: { ecmaVersion: 6 } } // YieldExpression
+        { code: "function* foo() { var index = 0; throw yield index++; }", parserOptions: { ecmaVersion: 6 } }, // YieldExpression
+        { code: "async function foo() { throw await bar; }", parserOptions: { ecmaVersion: 8 } } // AwaitExpression
     ],
     invalid: [
         {
             code: "throw 'error';",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
         {
             code: "throw 0;",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
         {
             code: "throw false;",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
         {
             code: "throw null;",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
+                type: "ThrowStatement"
+            }]
+        },
+        {
+            code: "throw {};",
+            errors: [{
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
         {
             code: "throw undefined;",
             errors: [{
-                message: "Do not throw undefined.",
+                messageId: "undef",
                 type: "ThrowStatement"
             }]
         },
@@ -80,14 +88,14 @@ ruleTester.run("no-throw-literal", rule, {
         {
             code: "throw 'a' + 'b';",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
         {
             code: "var b = new Error(); throw 'a' + b;",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
@@ -96,7 +104,7 @@ ruleTester.run("no-throw-literal", rule, {
         {
             code: "throw foo = 'error';",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
@@ -105,7 +113,7 @@ ruleTester.run("no-throw-literal", rule, {
         {
             code: "throw new Error(), 1, 2, 3;",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
@@ -114,7 +122,7 @@ ruleTester.run("no-throw-literal", rule, {
         {
             code: "throw 'literal' && 'not an Error';",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
@@ -123,7 +131,7 @@ ruleTester.run("no-throw-literal", rule, {
         {
             code: "throw foo ? 'not an Error' : 'literal';",
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
             }]
         },
@@ -133,7 +141,7 @@ ruleTester.run("no-throw-literal", rule, {
             code: "throw `${err}`;",
             parserOptions: { ecmaVersion: 6 },
             errors: [{
-                message: "Expected an object to be thrown.",
+                messageId: "object",
                 type: "ThrowStatement"
 
             }]
